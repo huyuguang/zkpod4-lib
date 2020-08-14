@@ -13,9 +13,15 @@ class Base : boost::noncopyable {
  public:
   static inline int64_t const kGSize = 4096 * 1024 * 50;
 
-  Base(std::string const& file) { LoadInternal(file); }
+  Base(std::string const& file) {
+    g_ = new G1[kGSize];
+    LoadInternal(file);
+  }
 
-  Base() { Create(); }
+  Base() {
+    g_ = new G1[kGSize];
+    Create();
+  }
   
   ~Base() { delete[] g_; }
 
@@ -42,9 +48,9 @@ class Base : boost::noncopyable {
   void Create() {
     Tick tick(__FN__);
 
-    GenerateG1(0xffffffff, &h_);
+    GenerateG1(0xffffffffffffffffULL, &h_);
 
-    GenerateG1(0xfffffffe, &u_);
+    GenerateG1(0xfffffffffffffffeULL, &u_);
 
     auto parallel_f = [this](int64_t i) { GenerateG1(i, &g_[i]); };
     parallel::For(kGSize, parallel_f);
