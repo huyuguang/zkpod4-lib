@@ -154,7 +154,7 @@ struct Sec53b {
 #ifdef _DEBUG
       Fr check_z = FrZero();
       for (int64_t i = 0; i < m(); ++i) {
-        CHECK(yt[i] == HadamardProduct(y[i], t));
+        CHECK(yt[i] == HadamardProduct(y[i], t),"");
         check_z += InnerProduct(x[i], yt[i]);
       }
       CHECK(z == check_z,"");

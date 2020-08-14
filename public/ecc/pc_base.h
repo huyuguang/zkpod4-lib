@@ -11,15 +11,17 @@ namespace pc {
 // pedersen commitment base H&G
 class Base : boost::noncopyable {
  public:
-  static inline int64_t const kGSize = 4096 * 1025 * 4;// *50;
+  static inline int64_t const kGSize = 4096 * 1024 * 50;
 
   Base(std::string const& file) { LoadInternal(file); }
 
   Base() { Create(); }
+  
+  ~Base() { delete[] g_; }
 
   G1 const& u() const& { return u_; }
   G1 const& h() const& { return h_; }
-  std::array<G1, kGSize> const& g() const { return g_; }
+  G1 const* g() const { return g_; }
 
   bool Save(std::string const& file) {
     try {
@@ -62,8 +64,9 @@ class Base : boost::noncopyable {
     CHECK(WriteHeader(f, header), "");
     CHECK(WriteG1(f, h_), "");
     CHECK(WriteG1(f, u_), "");
-    for (auto& i : g_) {
-      CHECK(WriteG1(f, i), "");
+    for (auto i = 0; i < kGSize; ++i) {
+      auto& g = g_[i];
+      CHECK(WriteG1(f, g), "");
     }
   }
 
@@ -83,8 +86,9 @@ class Base : boost::noncopyable {
 
     CHECK(ReadG1(f, u_), file);
 
-    for (auto& i : g_) {
-      CHECK(ReadG1(f, i), file);
+    for (auto i = 0; i < kGSize; ++i) {
+      auto& g = g_[i];
+      CHECK(ReadG1(f, g), file);
     }
   }
 
@@ -141,7 +145,7 @@ class Base : boost::noncopyable {
  private:
   G1 u_;
   G1 h_;
-  std::array<G1, kGSize> g_;
+  G1* g_;
 };
 
 inline Base& GetPcBase(std::string const& file = "") {
@@ -189,7 +193,7 @@ inline bool OpenOrCreatePdsPub(std::string const& file) {
   }
 }
 
-inline std::array<G1, Base::kGSize> const& PcG() {
+inline G1 const* PcG() {
   auto const& base = GetPcBase();
   return base.g();
 }
@@ -261,7 +265,7 @@ inline G1 ComputeCom(int64_t n, G1 const* g, Fr const* x, Fr const& r,
 
 inline G1 ComputeCom(int64_t n, Fr const* x, Fr const& r,
                      bool check_01 = false) {
-  return ComputeCom(n, PcG().data(), PcH(), x, r, check_01);
+  return ComputeCom(n, PcG(), PcH(), x, r, check_01);
 }
 
 inline G1 ComputeCom(std::vector<Fr> const& x, Fr const& r,
@@ -320,11 +324,11 @@ inline bool TestPcCommitment(int64_t n) {
   G1 left, right;
   {
     Tick tick("multiexp1");
-    left = ComputeCom(n, base.g().data(), base.h(), x.data(), r);
+    left = ComputeCom(n, base.g(), base.h(), x.data(), r);
   }
   {
     Tick tick("multiexp2");
-    right = MultiExp(base.g().data(), x.data(), n) + base.h() * r;
+    right = MultiExp(base.g(), x.data(), n) + base.h() * r;
   }
 
   bool success = left == right;
