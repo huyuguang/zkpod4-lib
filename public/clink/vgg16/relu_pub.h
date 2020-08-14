@@ -9,10 +9,10 @@
 
 namespace clink::vgg16 {
 
-enum ReluBnImageType { kCombinedInput, kCombinedOutput, kInput, kOutput };
+enum ReluImageType { kCombinedInput, kCombinedOutput, kInput, kOutput };
 
 struct ReluBnImage {
-  ReluBnImageType type;
+  ReluImageType type;
   std::vector<Fr> x;
   G1 com_x;
   Fr com_x_r;
@@ -35,7 +35,7 @@ struct ReluBnInOutPub {
   }
 };
 
-struct ReluBnInOutSec {
+struct ReluInOutSec {
   std::vector<Fr> input;   // combined inputs
   std::vector<Fr> output;  // combined outputs
   Fr com_in_r;
@@ -59,27 +59,27 @@ struct ReluBnR1csPub {
   }
 };
 
-struct ReluBnR1csSec : public BaseR1csSec {
+struct ReluR1csSec : public BaseR1csSec {
   // nothing
 };
 
-struct ReluBnProof {
+struct ReluProof {
   ReluBnInOutPub io_pub;
   ReluBnR1csPub r1cs_pub;
 
-  bool operator==(ReluBnProof const& b) const {
+  bool operator==(ReluProof const& b) const {
     return io_pub == b.io_pub && r1cs_pub == b.r1cs_pub;
   }
 
-  bool operator!=(ReluBnProof const& b) const { return !(*this == b); }
+  bool operator!=(ReluProof const& b) const { return !(*this == b); }
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.ReluBnProof", ("i", io_pub), ("r", r1cs_pub));
+    ar& YAS_OBJECT_NVP("vgg16.ReluProof", ("i", io_pub), ("r", r1cs_pub));
   }
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.ReluBnProof", ("i", io_pub), ("r", r1cs_pub));
+    ar& YAS_OBJECT_NVP("vgg16.ReluProof", ("i", io_pub), ("r", r1cs_pub));
   }
 };
 
@@ -101,8 +101,8 @@ inline std::vector<Fr> ReluBnComputeFst(h256_t const& seed,
 inline void ReluBnBuildChallenge(h256_t const& seed,
                                  std::vector<ReluBnImage>& images) {
   Tick tick(__FN__);
-  assert(images[0].type == ReluBnImageType::kCombinedInput);
-  assert(images[1].type == ReluBnImageType::kCombinedOutput);
+  assert(images[0].type == ReluImageType::kCombinedInput);
+  assert(images[1].type == ReluImageType::kCombinedOutput);
 
   images[0].a = ReluBnComputeFst(seed, "relubn input", images[0].x.size());
   images[1].a = ReluBnComputeFst(seed, "relubn output", images[1].x.size());
@@ -112,8 +112,8 @@ inline void ReluBnBuildChallenge(h256_t const& seed,
   for (size_t i = 1; i < images.size() / 2; ++i) {
     auto& input_image = images[2 * i];
     auto& output_image = images[2 * i + 1];
-    assert(input_image.type == ReluBnImageType::kInput);
-    assert(output_image.type == ReluBnImageType::kOutput);
+    assert(input_image.type == ReluImageType::kInput);
+    assert(output_image.type == ReluImageType::kOutput);
     auto size = input_image.x.size();
     input_image.a.resize(size);
     output_image.a.resize(size);
@@ -128,7 +128,7 @@ inline void ReluBnBuildChallenge(h256_t const& seed,
 // 1: combined_out
 // even: in
 // odd: out
-inline void ReluBnBuildImages(ProveContext const& context,
+inline void ReluBuildImages(ProveContext const& context,
                               std::vector<ReluBnImage>& images) {
   Tick tick(__FN__);
   auto const& const_images = context.const_images();
@@ -137,31 +137,31 @@ inline void ReluBnBuildImages(ProveContext const& context,
 
   std::vector<Fr> combined_in_x;
   std::vector<Fr> combined_out_x;
-  images.resize(kReluBnLayers.size() * 2 + 2);
-  for (size_t order = 0; order < kReluBnLayers.size(); ++order) {
-    auto layer = kReluBnLayers[order];
+  images.resize(kReluLayers.size() * 2 + 2);
+  for (size_t order = 0; order < kReluLayers.size(); ++order) {
+    auto layer = kReluLayers[order];
     ReluBnImage& in = images[2 + order * 2];
     in.x = const_images[layer]->data;
-    in.type = ReluBnImageType::kInput;
+    in.type = ReluImageType::kInput;
     in.com_x = com_images[layer];
     in.com_x_r = com_images_r[layer];
     combined_in_x.insert(combined_in_x.end(), in.x.begin(), in.x.end());
 
     ReluBnImage& out = images[2 + order * 2 + 1];
     out.x = const_images[layer + 1]->data;
-    out.type = ReluBnImageType::kOutput;
+    out.type = ReluImageType::kOutput;
     out.com_x = com_images[layer + 1];
     out.com_x_r = com_images_r[layer + 1];
     combined_out_x.insert(combined_out_x.end(), out.x.begin(), out.x.end());
   }
 
   ReluBnImage& combined_in = images[0];
-  combined_in.type = ReluBnImageType::kCombinedInput;
+  combined_in.type = ReluImageType::kCombinedInput;
   combined_in.x = std::move(combined_in_x);
   combined_in.com_x_r = FrRand();
 
   ReluBnImage& combined_out = images[1];
-  combined_out.type = ReluBnImageType::kCombinedOutput;
+  combined_out.type = ReluImageType::kCombinedOutput;
   combined_out.x = std::move(combined_out_x);
   combined_out.com_x_r = FrRand();
 
@@ -179,10 +179,10 @@ inline void ReluBnBuildImages(ProveContext const& context,
   parallel::Invoke(tasks);
 }
 
-inline size_t ReluBnGetCircuitCount() {
+inline size_t ReluGetCircuitCount() {
   size_t size = 0;
-  for (size_t order = 0; order < kReluBnLayers.size(); ++order) {
-    auto layer = kReluBnLayers[order];
+  for (size_t order = 0; order < kReluLayers.size(); ++order) {
+    auto layer = kReluLayers[order];
     size_t C = kImageInfos[layer].C;
     size_t D = kImageInfos[layer].D;
     size += C * D * D;
@@ -190,12 +190,12 @@ inline size_t ReluBnGetCircuitCount() {
   return size;
 }
 
-inline std::string const& ReluBnR1csTag() {
-  static const std::string kTag = "relubn r1cs";
+inline std::string const& ReluR1csTag() {
+  static const std::string kTag = "relu r1cs";
   return kTag;
 }
 
-inline std::string const& ReluBnAdaptTag(bool in) {
+inline std::string const& ReluAdaptTag(bool in) {
   static const std::string kTagIn = "relubn in";
   static const std::string kTagOut = "relubn out";
   return in ? kTagIn : kTagOut;
