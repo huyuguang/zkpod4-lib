@@ -174,19 +174,27 @@ class AuxiPub {
   template <size_t D, size_t C, size_t K>
   void ComputeParaConv(std::array<G1, K * C>& u) {
     auto DD = D * D;
-    for (size_t i = 0; i < K * C; ++i) {
-      u[i] = pc::ComputeSigmaG(i * DD, DD);
-    }
+    auto KC = K * C;
+    auto pf = [&u, DD](int64_t i) { u[i] = pc::ComputeSigmaG(i * DD, DD); };
+    parallel::For(KC, pf);
   }
 
   template <size_t D, size_t C, size_t K>
   void ComputeDataConv(std::array<G1, C * D * D>& u) {
-    for (size_t i = 0; i < C * D * D; ++i) {
+    auto CDD = C * D * D;
+    auto pf = [&u, CDD](int64_t i) {
       u[i] = G1Zero();
       for (size_t j = 0; j < K; ++j) {
-        u[i] += pc::PcG(i + j * C * D * D);
+        u[i] += pc::PcG(i + j * CDD);
       }
-    }
+    };
+    parallel::For(CDD, pf);
+    // for (size_t i = 0; i < C * D * D; ++i) {
+    //  u[i] = G1Zero();
+    //  for (size_t j = 0; j < K; ++j) {
+    //    u[i] += pc::PcG(i + j * C * D * D);
+    //  }
+    //}
   }
 
   bool Load(std::string const& file) {
