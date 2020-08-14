@@ -127,9 +127,6 @@
     <ClInclude Include="..\public\ecc\ecc.h">
       <Filter>public\ecc</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\ecc\ecc_pub.h">
-      <Filter>public\ecc</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\ecc\multiexp.h">
       <Filter>public\ecc</Filter>
     </ClInclude>
@@ -442,9 +439,6 @@
     <ClInclude Include="..\public\clink\vgg16\policy.h">
       <Filter>public\clink\vgg16</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\circuit\vgg16\relubn_gadget.h">
-      <Filter>public\circuit\vgg16</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\circuit\vgg16\pooling_gadget.h">
       <Filter>public\circuit\vgg16</Filter>
     </ClInclude>
@@ -464,9 +458,6 @@
       <Filter>public\clink\vgg16</Filter>
     </ClInclude>
     <ClInclude Include="..\public\clink\vgg16\pooling_pub.h">
-      <Filter>public\clink\vgg16</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\clink\vgg16\relubn_pub.h">
       <Filter>public\clink\vgg16</Filter>
     </ClInclude>
     <ClInclude Include="..\public\clink\vgg16\conv_prove.h">
@@ -493,17 +484,26 @@
     <ClInclude Include="..\public\clink\vgg16\r1cs_pub.h">
       <Filter>public\clink\vgg16</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\clink\vgg16\relubn_prove.h">
-      <Filter>public\clink\vgg16</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\clink\vgg16\relubn_verify.h">
-      <Filter>public\clink\vgg16</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\clink\vgg16\safevec.h">
       <Filter>public\clink\vgg16</Filter>
     </ClInclude>
     <ClInclude Include="..\public\circuit\test_gadget.h">
       <Filter>public\circuit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\clink\vgg16\relu_prove.h">
+      <Filter>public\clink\vgg16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\clink\vgg16\relu_pub.h">
+      <Filter>public\clink\vgg16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\clink\vgg16\relu_verify.h">
+      <Filter>public\clink\vgg16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\misc\check.h">
+      <Filter>public\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\misc\debug.h">
+      <Filter>public\misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

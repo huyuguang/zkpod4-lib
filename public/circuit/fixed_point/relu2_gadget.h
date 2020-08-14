@@ -4,6 +4,7 @@
 
 namespace circuit::fixed_point {
 
+// NOTE the template M
 // insure a >=-kFrDN && a < kFrDN, that is [-2^(D+N), 2^(D+N)-1]
 // ret = a >= 0? a : 0
 // num_constraints:
@@ -19,9 +20,9 @@ class Relu2Gadget : public libsnark::gadget<Fr> {
               const std::string& annotation_prefix = "")
       : libsnark::gadget<Fr>(pb, annotation_prefix) {
     a_.allocate(this->pb, FMT(this->annotation_prefix, " a"));
-    precision_gadget_.reset(new PrecisionGadget<D, N, M>(
-        this->pb, a_, FMT(this->annotation_prefix, " precision_gadget")));
     ret_.allocate(pb, FMT(this->annotation_prefix, " ret"));
+    precision_gadget_.reset(new PrecisionGadget<D, N, M>(
+        this->pb, a_, FMT(this->annotation_prefix, " precision_gadget")));    
     generate_r1cs_constraints();
   }
 

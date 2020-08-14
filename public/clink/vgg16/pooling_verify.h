@@ -128,27 +128,19 @@ inline bool PoolingVerifyPreprocess(h256_t seed, VerifyContext const& context,
                                     R1csVerifyItemMan& r1cs_man) {
   Tick tick(__FN__);
 
-  // can parallel but need to protect adapt_items and parallel_tasks
-  if (!PoolingInputVerifyPreprocess(seed, context, proof, adapt_man)) {
-#ifdef _DEBUG_CHECK
-    throw std::runtime_error("oops");
-#endif
-    return false;
-  }
+  std::array<parallel::VoidTask, 3> tasks;
+  
+  tasks[0] = [&seed, &context, &proof, &adapt_man]() {
+    CHECK(PoolingInputVerifyPreprocess(seed, context, proof, adapt_man),"");
+  };
 
-  if (!PoolingR1csVerifyPreprocess(seed, context, proof, r1cs_man)) {
-#ifdef _DEBUG_CHECK
-    throw std::runtime_error("oops");
-#endif
-    return false;
-  }
+  tasks[1] = [&seed, &context, &proof, &r1cs_man]() {
+    CHECK(PoolingR1csVerifyPreprocess(seed, context, proof, r1cs_man),"");
+  };
 
-  if (!PoolingOutputVerifyPreprocess(seed, context, proof, adapt_man)) {
-#ifdef _DEBUG_CHECK
-    throw std::runtime_error("oops");
-#endif
-    return false;
-  }
+  tasks[2] = [&seed, &context, &proof, &adapt_man]() {
+    CHECK(PoolingOutputVerifyPreprocess(seed, context, proof, adapt_man),"");
+  };
 
   return true;
 }

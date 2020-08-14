@@ -53,7 +53,7 @@ class EccPub : boost::noncopyable {
   }
 
   G1 PowerU1(uint64_t u_index, Fr const& f) const {
-    if (u_index >= kU1Size) throw std::runtime_error("bad u_index");
+    CHECK(u_index < kU1Size, std::to_string(u_index));
     if (u_index < kU1WmSize) {
       G1WM const& wm = u1_wm_[u_index];
       G1 ret;
@@ -65,7 +65,7 @@ class EccPub : boost::noncopyable {
   }
 
   G2 PowerU2(uint64_t u_index, Fr const& f) const {
-    if (u_index >= kU2Size) throw std::runtime_error("bad u_index");
+    CHECK(u_index < kU2Size, std::to_string(u_index));
     if (u_index < kU2WmSize) {
       G2WM const& wm = u2_wm_[u_index];
       G2 ret;
@@ -119,7 +119,7 @@ class EccPub : boost::noncopyable {
   void SaveInternal(std::string const& file) {
     Tick tick(__FN__);
     FILE* f = fopen(file.c_str(), "wb+");
-    if (!f) throw std::runtime_error("Create file failed");
+    CHECK(f, file);
 
     std::unique_ptr<FILE, decltype(&fclose)> auto_close(f, fclose);
 
@@ -134,22 +134,14 @@ class EccPub : boost::noncopyable {
     header.u1wm_len = GetG1wmFlatLen(u1_wm_[0]);
     header.u2wm_len = GetG2wmFlatLen(u2_wm_[0]);
 
-    if (!WriteHeader(f, header)) {
-      throw std::runtime_error("Write header failed");
-    }
+    CHECK(WriteHeader(f, header), "");
 
-    if (!WriteG1wm(f, g1_wm_)) {
-      throw std::runtime_error("Write g1_wm failed");
-    }
+    CHECK(WriteG1wm(f, g1_wm_), "");
 
-    if (!WriteG2wm(f, g2_wm_)) {
-      throw std::runtime_error("Write g2_wm failed");
-    }
+    CHECK(WriteG2wm(f, g2_wm_), "");
 
     for (auto& i : u1_) {
-      if (!WriteG1(f, i)) {
-        throw std::runtime_error("Write u1 failed");
-      }
+      CHECK(WriteG1(f, i), "u1");
     }
 
     for (auto& i : u1_wm_) {

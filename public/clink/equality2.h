@@ -24,10 +24,9 @@ struct Equality2 {
                     std::vector<G1> const& cv, std::vector<Fr> const& rv,
                     GetRefG1 const& get_gv, std::vector<G1> const& cu,
                     std::vector<Fr> const& ru, GetRefG1 const& get_gu) {
-    if (v.size() != cv.size() || v.size() != cu.size() ||
-        v.size() != rv.size() || v.size() != ru.size()) {
-      throw std::runtime_error("oops");
-    }
+    CHECK(v.size() == cv.size() && v.size() == cu.size() &&
+              v.size() == rv.size() && v.size() == ru.size(),
+          "");
 
     auto m = v.size();
     size_t n = 0;
@@ -82,9 +81,7 @@ struct Equality2 {
                      std::vector<size_t> const& v_size,
                      std::vector<G1> const& cv, GetRefG1 const& get_gv,
                      std::vector<G1> const& cu, GetRefG1 const& get_gu) {
-    if (cu.size() != cv.size() || v_size.size() != cv.size()) {
-      throw std::runtime_error("oops");
-    }
+    CHECK(cu.size() == cv.size() && v_size.size() == cv.size(), "");
 
     auto m = v_size.size();
     size_t n = 0;

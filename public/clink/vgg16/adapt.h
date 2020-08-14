@@ -109,22 +109,12 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
               return a.order_tag < b.order_tag;
             });
 
-#ifdef _DEBUG_CHECK
-  for (auto const& i : items) {
-    //std::cout << i.order_tag << "\n";
-
-    if (!i.CheckFormat()) {
-      std::string errmsg = i.order_tag + " oops";
-      std::cout << errmsg << "\n";
-      throw std::runtime_error(errmsg);
-    }
-    if (!i.CheckData()) {
-      std::string errmsg = i.order_tag + " oops";
-      std::cout << errmsg << "\n";
-      throw std::runtime_error(errmsg);
+  if (DEBUG_CHECK) {
+    for (auto const& i : items) {
+      CHECK(i.CheckFormat(), i.order_tag);
+      CHECK(i.CheckData(), i.order_tag);
     }
   }
-#endif    
   
   for (auto const& i : items) {
     std::cout << __FN__ << " " << i.order_tag << "," << i.a.size() << "*"
@@ -194,10 +184,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
             });
 
   for (auto const& i : items) {    
-    if (!i.CheckFormat()) {
-      std::cout << i.order_tag << " format error\n";
-      throw std::runtime_error("oops");
-    }
+    CHECK(i.CheckFormat(), i.order_tag);
   }
 
   AdaptUpdateSeed(seed, items);

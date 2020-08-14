@@ -316,10 +316,7 @@ struct Mnist {
           com_data(last_output.com),
           data(std::move(last_output.data)) {
       namespace fp = circuit::fp;
-      if (data.size() != M) {
-        assert(false);
-        throw std::runtime_error("invalid data_count");
-      }
+      CHECK(data.size() == M, "");
       this->data.push_back(fp::RationalConst<6, 24>().kFrN);
       this->com_data += pc::PcG(M) * data.back();
     }

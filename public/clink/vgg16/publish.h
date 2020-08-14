@@ -31,8 +31,8 @@ inline bool Publish(std::string const& para_path,
   }
 
   try {
-    dbl::Para dbl_para(para_path);
-    std::unique_ptr<Para> para(new Para(dbl_para));
+    std::unique_ptr<dbl::Para> dbl_para(new dbl::Para(para_path));
+    std::unique_ptr<Para> para(new Para(*dbl_para));
     if (!YasSaveBin(sec_path + "/para", *para)) {
       std::cerr << "save para failed\n";
       return false;
@@ -44,14 +44,14 @@ inline bool Publish(std::string const& para_path,
       return false;
     }
 
-    ParaCommitmentPub com_pub;
-    ParaCommitmentSec com_sec;
-    ComputeParaCommitment(*para, *auxi, com_pub, com_sec);
-    if (!YasSaveBin(pub_path + "/para_com_pub", com_pub)) {
+    std::unique_ptr<ParaCommitmentPub> com_pub(new ParaCommitmentPub);
+    std::unique_ptr<ParaCommitmentSec> com_sec(new ParaCommitmentSec);
+    ComputeParaCommitment(*para, *auxi, *com_pub, *com_sec);
+    if (!YasSaveBin(pub_path + "/para_com_pub", *com_pub)) {
       std::cerr << "save com_pub failed\n";
       return false;
     }
-    if (!YasSaveBin(sec_path + "/para_com_sec", com_sec)) {
+    if (!YasSaveBin(sec_path + "/para_com_sec", *com_sec)) {
       std::cerr << "save com_sec failed\n";
       return false;
     }

@@ -105,7 +105,7 @@ class MulGadget : public libsnark::gadget<Fr> {
 
  private:
   void CheckMaxNumOfBits() {
-    assert(!a_.empty());
+    CHECK(!a_.empty(), "");
 
     size_t total_bits_of_c = 0;
     for (auto& i : c_) {
@@ -116,8 +116,7 @@ class MulGadget : public libsnark::gadget<Fr> {
     }
     size_t total_bits = a_.size() * (D + N) + total_bits_of_c;
 
-    assert(total_bits < 253);
-    if (total_bits >= 253) throw std::runtime_error(__FN__);
+    CHECK(total_bits < 253, "");
   }
 
  private:

@@ -5,14 +5,12 @@
 namespace clink::vgg16 {
 
 struct ImageCommitmentPub {
-  std::array<G1, 35> c;
+  std::array<G1, kImageCount> c;
 
   ImageCommitmentPub() {}
 
   ImageCommitmentPub(std::string const& file) {
-    if (!YasLoadBin(file, *this)) {
-      throw std::invalid_argument("invalid image commitment pub file: " + file);
-    }
+    CHECK(YasLoadBin(file, *this), file);
   }
 
   bool operator==(ImageCommitmentPub const& b) const { return c == b.c; }
@@ -30,14 +28,12 @@ struct ImageCommitmentPub {
 };
 
 struct ImageCommitmentSec {
-  std::array<Fr, 35> r;
+  std::array<Fr, kImageCount> r;
 
   ImageCommitmentSec() {}
 
   ImageCommitmentSec(std::string const& file) {
-    if (!YasLoadBin(file, *this)) {
-      throw std::invalid_argument("invalid image commitment sec file: " + file);
-    }
+    CHECK(YasLoadBin(file, *this), file);
   }
 
   bool operator==(ImageCommitmentSec const& b) const { return r == b.r; }
@@ -55,7 +51,7 @@ struct ImageCommitmentSec {
 };
 
 inline void ComputePerImageCommitment(
-    std::array<std::unique_ptr<Image>, 35> const& images,
+    std::array<std::unique_ptr<Image>, kImageCount> const& images,
     ImageCommitmentPub& pub, ImageCommitmentSec& sec) {
   sec.r[0] = FrZero();  // the image[0] is public input
   FrRand(sec.r.data() + 1, sec.r.size() - 1);

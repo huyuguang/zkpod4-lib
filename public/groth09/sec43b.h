@@ -89,22 +89,10 @@ struct Sec43b {
 
    private:
     void Check() {
-      if (x.empty()) {
-        std::cout << __FN__ << ":" << __LINE__ << "oops\n";
-        throw std::runtime_error("oops");
-      }
-
-      if (x.size() != y.size() || x.size() != z.size()) {
-        std::cout << __FN__ << ":" << __LINE__ << "oops\n";
-        throw std::runtime_error("oops");
-      }
-
+      CHECK(!x.empty(), "");
+      CHECK(x.size() == y.size() && x.size() == z.size(),"");
       for (auto i = 0LL; i < m(); ++i) {
-        if (x[i].size() != y[i].size() || x[i].size() != z[i].size()) {
-          std::cout << __FN__ << ":" << __LINE__ << "oops\n";
-          throw std::runtime_error("oops");
-        }
-
+        CHECK(x[i].size() == y[i].size() && x[i].size() == z[i].size(), "");
         n_ = std::max(n_, x[i].size());
       }
     }

@@ -10,54 +10,9 @@
 
 namespace clink::vgg16 {
 
-struct BnCommitmentPub {
-  G1 mu;
-  G1 alpha;
-  G1 beta;
-
-  bool operator==(BnCommitmentPub const& b) const {
-    return mu == b.mu && alpha == b.alpha && beta == b.beta;
-  }
-
-  bool operator!=(BnCommitmentPub const& b) const { return !(*this == b); }
-
-  template <typename Ar>
-  void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub.bn", ("m", mu), ("a", alpha),
-                       ("b", beta));
-  }
-  template <typename Ar>
-  void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub.bn", ("m", mu), ("a", alpha),
-                       ("b", beta));
-  }
-};
-
-struct BnCommitmentSec {
-  Fr mu_r;
-  Fr alpha_r;
-  Fr beta_r;
-  bool operator==(BnCommitmentSec const& b) const {
-    return mu_r == b.mu_r && alpha_r == b.alpha_r && beta_r == b.beta_r;
-  }
-
-  bool operator!=(BnCommitmentSec const& b) const { return !(*this == b); }
-
-  template <typename Ar>
-  void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec.bn", ("m", mu_r), ("a", alpha_r),
-                       ("b", beta_r));
-  }
-  template <typename Ar>
-  void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec.bn", ("m", mu_r), ("a", alpha_r),
-                       ("b", beta_r));
-  }
-};
-
 struct ConvCommitmentPub {
-  std::array<std::array<G1, 9>, 13> coef;
-  std::array<G1, 13> bias;
+  std::array<std::array<G1, 9>, kConvCount> coef;
+  std::array<G1, kConvCount> bias;
 
   bool operator==(ConvCommitmentPub const& b) const {
     return coef == b.coef && bias == b.bias;
@@ -77,8 +32,8 @@ struct ConvCommitmentPub {
 };
 
 struct ConvCommitmentSec {
-  std::array<std::array<Fr, 9>, 13> coef_r;
-  std::array<Fr, 13> bias_r;
+  std::array<std::array<Fr, 9>, kConvCount> coef_r;
+  std::array<Fr, kConvCount> bias_r;
 
   bool operator==(ConvCommitmentSec const& b) const {
     return coef_r == b.coef_r && bias_r == b.bias_r;
@@ -98,197 +53,132 @@ struct ConvCommitmentSec {
 };
 
 struct DenseCommitmentPub {
-  std::array<G1, 512> d0;
-  std::array<G1, 10> d1;
+  std::array<G1, 4096> d0;
+  std::array<G1, 4096> d1;
+  std::array<G1, 1000> d2;
 
   template <size_t Order>
   auto const& get() const {
-    static_assert(Order == 0 || Order == 1, "invalid Order");
+    static_assert(Order == 0 || Order == 1 || Order == 2, "invalid Order");
     if constexpr (Order == 0)
       return d0;
-    else
+    else if constexpr (Order == 1)
       return d1;
+    else
+      return d2;
   }
 
   bool operator==(DenseCommitmentPub const& b) const {
-    return d0 == b.d0 && d1 == b.d1;
+    return d0 == b.d0 && d1 == b.d1 && d2 == b.d2;
   }
 
   bool operator!=(DenseCommitmentPub const& b) const { return !(*this == b); }
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub.dense", ("d0", d0), ("d1", d1));
+    ar& YAS_OBJECT_NVP("vgg16.para.compub.dense", ("d0", d0), ("d1", d1),
+                       ("d2", d2));
   }
 
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub.dense", ("d0", d0), ("d1", d1));
+    ar& YAS_OBJECT_NVP("vgg16.para.compub.dense", ("d0", d0), ("d1", d1),
+                       ("d2", d2));
   }
 };
 
 struct DenseCommitmentSec {
-  std::array<Fr, 512> d0_r;
-  std::array<Fr, 10> d1_r;
+  std::array<Fr, 4096> d0_r;
+  std::array<Fr, 4096> d1_r;
+  std::array<Fr, 1000> d2_r;
 
   template <size_t Order>
   auto const& get() const {
-    static_assert(Order == 0 || Order == 1, "invalid Order");
+    static_assert(Order == 0 || Order == 1 || Order == 2, "invalid Order");
     if constexpr (Order == 0)
       return d0_r;
-    else
+    else if constexpr (Order == 1)
       return d1_r;
+    else
+      return d2_r;
   }
 
   bool operator==(DenseCommitmentSec const& b) const {
-    return d0_r == b.d0_r && d1_r == b.d1_r;
+    return d0_r == b.d0_r && d1_r == b.d1_r && d2_r == b.d2_r;
   }
 
   bool operator!=(DenseCommitmentSec const& b) const { return !(*this == b); }
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec.dense", ("d0", d0_r), ("d1", d1_r));
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec.dense", ("d0", d0_r), ("d1", d1_r),
+                       ("d2", d2_r));
   }
 
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec.dense", ("d0", d0_r), ("d1", d1_r));
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec.dense", ("d0", d0_r), ("d1", d1_r),
+                       ("d2", d2_r));
   }
 };
 
 struct ParaCommitmentPub {
-  BnCommitmentPub bn;
   ConvCommitmentPub conv;
   DenseCommitmentPub dense;
 
   ParaCommitmentPub() {}
 
   ParaCommitmentPub(std::string const& file) {
-    if (!YasLoadBin(file, *this)) {
-      throw std::invalid_argument("invalid para commitment pub file: " + file);
-    }
+    CHECK(YasLoadBin(file, *this), file);
   }
 
   bool operator==(ParaCommitmentPub const& b) const {
-    return bn == b.bn && conv == b.conv && dense == b.dense;
+    return conv == b.conv && dense == b.dense;
   }
 
   bool operator!=(ParaCommitmentPub const& b) const { return !(*this == b); }
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("b", bn), ("c", conv),
+    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv),
                        ("d", dense));
   }
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("b", bn), ("c", conv),
+    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv),
                        ("d", dense));
   }
 };
 
 struct ParaCommitmentSec {
-  BnCommitmentSec bn;
   ConvCommitmentSec conv;
   DenseCommitmentSec dense;
 
   ParaCommitmentSec() {}
 
   ParaCommitmentSec(std::string const& file) {
-    if (!YasLoadBin(file, *this)) {
-      throw std::invalid_argument("invalid para commitment sec file: " + file);
-    }
+    CHECK(YasLoadBin(file, *this), file);
   }
 
   bool operator==(ParaCommitmentSec const& b) const {
-    return bn == b.bn && conv == b.conv && dense == b.dense;
+    return conv == b.conv && dense == b.dense;
   }
 
   bool operator!=(ParaCommitmentSec const& b) const { return !(*this == b); }
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("b", bn), ("c", conv),
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv),
                        ("d", dense));
   }
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("b", bn), ("c", conv),
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv),
                        ("d", dense));
   }
 };
 
-inline void ComputeBnCommitment(std::array<Para::BnLayer, 14> const& para,
-                                AuxiPub const& auxi, BnCommitmentPub& pub,
-                                BnCommitmentSec& sec) {
-  Tick tick(__FN__);
-  sec.alpha_r = FrRand();
-  sec.beta_r = FrRand();
-  sec.mu_r = FrRand();
-
-  // combine alpha,beta,mu
-  std::vector<Fr> all_alpha;
-  all_alpha.reserve(4736);
-  std::vector<Fr> all_beta;
-  all_beta.reserve(4736);
-  std::vector<Fr> all_mu;
-  all_mu.reserve(4736);
-
-  for (auto const& i : para) {
-    all_alpha.insert(all_alpha.end(), i.alpha.begin(), i.alpha.end());
-    all_beta.insert(all_beta.end(), i.beta.begin(), i.beta.end());
-    all_mu.insert(all_mu.end(), i.mu.begin(), i.mu.end());
-  }
-
-#ifdef _DEBUG_CHECK
-  if (all_alpha.size() != 4736) throw std::runtime_error("oops");
-  if (all_beta.size() != 4736) throw std::runtime_error("oops");
-  if (all_mu.size() != 4736) throw std::runtime_error("oops");
-#endif
-
-  pub.alpha = pc::ComputeCom(all_alpha.size(), auxi.para_u_bn().first,
-                             all_alpha.data(), sec.alpha_r);
-
-  pub.beta = pc::ComputeCom(all_beta.size(), auxi.para_u_bn().first,
-                            all_beta.data(), sec.beta_r);
-
-  pub.mu = pc::ComputeCom(all_mu.size(), auxi.para_u_bn().first, all_mu.data(),
-                          sec.mu_r);
-
-#ifdef _DEBUG_CHECK
-  std::vector<Fr> extended_alpha;
-  std::vector<Fr> extended_beta;
-  std::vector<Fr> extended_mu;
-  for (size_t i = 0; i < kLayerTypeOrders.size(); ++i) {
-    if (kLayerTypeOrders[i].first != kReluBn) continue;
-    size_t C = kImageInfos[i].C;
-    size_t D = kImageInfos[i].D;
-    auto order = kLayerTypeOrders[i].second;
-    auto const& bn_para = para[order];
-    if (C != bn_para.alpha.size()) throw std::runtime_error("oops");
-    for (size_t j = 0; j < bn_para.alpha.size(); ++j) {
-      // repeat DD times
-      for (size_t k = 0; k < D * D; ++k) {
-        extended_alpha.push_back(bn_para.alpha[j]);
-        extended_beta.push_back(bn_para.beta[j]);
-        extended_mu.push_back(bn_para.mu[j]);
-      }
-    }
-  }
-  if (pub.alpha != pc::ComputeCom(extended_alpha, sec.alpha_r)) {
-    throw std::runtime_error("oops");
-  }
-  if (pub.beta != pc::ComputeCom(extended_beta, sec.beta_r)) {
-    throw std::runtime_error("oops");
-  }
-  if (pub.mu != pc::ComputeCom(extended_mu, sec.mu_r)) {
-    throw std::runtime_error("oops");
-  }
-#endif
-}
-
-inline void ComputeConvCommitment(std::array<Para::ConvLayer, 13> const& para,
+inline void ComputeConvCommitment(std::array<Para::ConvLayer, kConvCount> const& para,
                                   AuxiPub const& auxi, ConvCommitmentPub& pub,
                                   ConvCommitmentSec& sec) {
   Tick tick(__FN__);
@@ -336,32 +226,48 @@ inline void ComputeConvCommitment(std::array<Para::ConvLayer, 13> const& para,
   parallel::For((int64_t)para.size(), parallel_f);
 }
 
-inline void ComputeDenseCommitment(std::array<Para::DenseLayer, 2> const& para,
-                                   DenseCommitmentPub& pub,
-                                   DenseCommitmentSec& sec) {
+inline void ComputeDenseCommitment(
+    std::array<Para::DenseLayer, kDenseCount> const& para,
+    DenseCommitmentPub& pub, DenseCommitmentSec& sec) {
   Tick tick(__FN__);
   FrRand(sec.d0_r.data(), sec.d0_r.size());
   FrRand(sec.d1_r.data(), sec.d1_r.size());
+  FrRand(sec.d2_r.data(), sec.d2_r.size());
 
-  assert(para[0].weight.size() == pub.d0.size());
-  for (size_t i = 0; i < para[0].weight.size(); ++i) {
+  CHECK(para[0].weight.size() == pub.d0.size(), "");
+  CHECK(para[1].weight.size() == pub.d1.size(), "");
+  CHECK(para[2].weight.size() == pub.d2.size(), "");
+
+  auto pf1 = [&para, &pub, &sec](int64_t i) {
     auto const& w = para[0].weight[i];
     pub.d0[i] = pc::ComputeCom(w, sec.d0_r[i]);
-  }
+  };
+  parallel::For(para[0].weight.size(), pf1);
 
-  assert(para[1].weight.size() == pub.d1.size());
-  for (size_t i = 0; i < para[1].weight.size(); ++i) {
+  auto pf2 = [&para, &pub, &sec](int64_t i) {
     auto const& w = para[1].weight[i];
     pub.d1[i] = pc::ComputeCom(w, sec.d1_r[i]);
-  }
+  };
+  parallel::For(para[1].weight.size(), pf2);
+
+  auto pf3 = [&para, &pub, &sec](int64_t i) {
+    auto const& w = para[2].weight[i];
+    pub.d2[i] = pc::ComputeCom(w, sec.d2_r[i]);
+  };
+  parallel::For(para[2].weight.size(), pf3);
 }
 
 inline void ComputeParaCommitment(Para const& para, AuxiPub const& auxi,
                                   ParaCommitmentPub& pub,
                                   ParaCommitmentSec& sec) {
   Tick tick(__FN__);
-  ComputeBnCommitment(para.bn_layers(), auxi, pub.bn, sec.bn);
-  ComputeConvCommitment(para.conv_layers(), auxi, pub.conv, sec.conv);
-  ComputeDenseCommitment(para.dense_layers(), pub.dense, sec.dense);
+  std::array<parallel::VoidTask, 2> tasks;
+  tasks[0] = [&para,&auxi,&pub,&sec]() {
+    ComputeConvCommitment(para.conv_layers(), auxi, pub.conv, sec.conv);
+  };
+  tasks[1] = [&para, &auxi, &pub, &sec]() {
+    ComputeDenseCommitment(para.dense_layers(), pub.dense, sec.dense);
+  };
+  parallel::Invoke(tasks);
 }
 }  // namespace clink::vgg16

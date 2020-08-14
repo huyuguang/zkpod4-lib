@@ -6,7 +6,7 @@
 #include "./image_com.h"
 #include "./pooling_verify.h"
 #include "./prove.h"
-#include "./relubn_verify.h"
+#include "./relu_verify.h"
 
 namespace clink::vgg16 {
 
@@ -27,8 +27,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   });
 
   // conv
-  size_t conv_count = kConvLayers.size();
-  for (size_t i = 0; i < conv_count; ++i) {
+  for (size_t i = 0; i < 1/*kConvCount*/; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       return OneConvVerifyPreprocess(seed, context, kConvLayers[i],
                                      proof.conv[i], adapt_man, r1cs_man);
@@ -38,7 +37,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
 #if 1
   // relubn
   tasks.emplace_back([&context, &seed, &proof, &adapt_man, &r1cs_man]() {
-    return ReluBnVerifyPreprocess(seed, context, proof.relubn, adapt_man,
+    return ReluVerifyPreprocess(seed, context, proof.relubn, adapt_man,
                                   r1cs_man);
   });
 
@@ -56,6 +55,11 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   // dense1
   tasks.emplace_back([&context, &seed, &proof]() {
     return DenseVerify<1>(seed, context, proof.dense1);
+  });
+
+  // dense2
+  tasks.emplace_back([&context, &seed, &proof]() {
+    return DenseVerify<2>(seed, context, proof.dense2);
   });
 #endif
 

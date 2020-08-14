@@ -155,7 +155,6 @@
     <ClInclude Include="..\public\circuit\test_gadget.h" />
     <ClInclude Include="..\public\circuit\vgg16\ip_gadget.h" />
     <ClInclude Include="..\public\circuit\vgg16\pooling_gadget.h" />
-    <ClInclude Include="..\public\circuit\vgg16\relubn_gadget.h" />
     <ClInclude Include="..\public\circuit\vgg16\vgg16.h" />
     <ClInclude Include="..\public\clink\affine.h" />
     <ClInclude Include="..\public\clink\details.h" />
@@ -199,9 +198,9 @@
     <ClInclude Include="..\public\clink\vgg16\publish.h" />
     <ClInclude Include="..\public\clink\vgg16\r1cs.h" />
     <ClInclude Include="..\public\clink\vgg16\r1cs_pub.h" />
-    <ClInclude Include="..\public\clink\vgg16\relubn_prove.h" />
-    <ClInclude Include="..\public\clink\vgg16\relubn_pub.h" />
-    <ClInclude Include="..\public\clink\vgg16\relubn_verify.h" />
+    <ClInclude Include="..\public\clink\vgg16\relu_prove.h" />
+    <ClInclude Include="..\public\clink\vgg16\relu_pub.h" />
+    <ClInclude Include="..\public\clink\vgg16\relu_verify.h" />
     <ClInclude Include="..\public\clink\vgg16\safevec.h" />
     <ClInclude Include="..\public\clink\vgg16\verify.h" />
     <ClInclude Include="..\public\clink\vgg16\vgg16.h" />
@@ -215,7 +214,6 @@
     <ClInclude Include="..\public\cmd\substr_query.h" />
     <ClInclude Include="..\public\debug\flags.h" />
     <ClInclude Include="..\public\ecc\ecc.h" />
-    <ClInclude Include="..\public\ecc\ecc_pub.h" />
     <ClInclude Include="..\public\ecc\funcs.h" />
     <ClInclude Include="..\public\ecc\multiexp.h" />
     <ClInclude Include="..\public\ecc\parallel_multiexp.h" />
@@ -242,6 +240,8 @@
     <ClInclude Include="..\public\iop\iop.h" />
     <ClInclude Include="..\public\log\log.h" />
     <ClInclude Include="..\public\log\tick.h" />
+    <ClInclude Include="..\public\misc\check.h" />
+    <ClInclude Include="..\public\misc\debug.h" />
     <ClInclude Include="..\public\misc\funcs.h" />
     <ClInclude Include="..\public\misc\func_alias.h" />
     <ClInclude Include="..\public\misc\misc.h" />

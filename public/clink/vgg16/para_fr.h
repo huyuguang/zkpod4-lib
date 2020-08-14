@@ -4,6 +4,7 @@
 #include "ecc/ecc.h"
 #include "misc/misc.h"
 #include "utils/fst.h"
+#include "circuit/fixed_point/fixed_point.h"
 
 namespace clink {
 namespace vgg16 {
@@ -66,49 +67,23 @@ struct Para {
     std::vector<Fr> bias;  // size=K
     size_t K() const { return bias.size(); }
     size_t C() const { return coefs[0].size(); }
-  };
-
-  struct BnLayer {
-    BnLayer() {}
-    BnLayer(BnLayerInfo const& info) : order(info.order) {
-      mu.resize(info.C);
-      alpha.resize(info.C);
-      beta.resize(info.C);
-    }
-    BnLayer(dbl::Para::BnLayer const& dbl) : order(dbl.order) {
+    void dump() const {
       namespace fp = circuit::fp;
-      mu.resize(dbl.mu.size());
-      alpha.resize(dbl.alpha.size());
-      beta.resize(dbl.beta.size());
-      for (size_t i = 0; i < mu.size(); ++i) {
-        mu[i] = fp::DoubleToRational<8, 24>(dbl.mu[i]);
-        alpha[i] = fp::DoubleToRational<8, 24>(dbl.alpha[i]);
-        beta[i] = fp::DoubleToRational<8, 24>(dbl.beta[i]);
+      for (auto const& i : coefs) {
+        for (auto const& j : i) {
+          for (auto const& k : j) {
+            for (auto const& l : k) {
+              double di = fp::RationalToDouble<8, 24>(l);
+              std::cout << di << ";";
+            }
+            std::cout << "\n";
+          }
+          std::cout << "\n";
+        }
+        std::cout << "\n";
       }
+      std::cout << "\n\n";
     }
-
-    bool operator==(BnLayer const& b) const {
-      return order == b.order && mu == b.mu && alpha == b.alpha &&
-             beta == b.beta;
-    }
-
-    bool operator!=(BnLayer const& b) const { return !(*this == b); }
-
-    template <typename Ar>
-    void serialize(Ar& ar) const {
-      ar& YAS_OBJECT_NVP("vgg16.para.bn", ("o", order), ("m", mu), ("a", alpha),
-                         ("b", beta));
-    }
-    template <typename Ar>
-    void serialize(Ar& ar) {
-      ar& YAS_OBJECT_NVP("vgg16.para.bn", ("o", order), ("m", mu), ("a", alpha),
-                         ("b", beta));
-    }
-
-    size_t order;
-    std::vector<Fr> mu;
-    std::vector<Fr> alpha;
-    std::vector<Fr> beta;
   };
 
   struct DenseLayer {
@@ -153,9 +128,6 @@ struct Para {
     for (size_t i = 0; i < conv_layers_.size(); ++i) {
       if (conv_layer(i) != b.conv_layer(i)) return false;
     }
-    for (size_t i = 0; i < bn_layers_.size(); ++i) {
-      if (bn_layer(i) != b.bn_layer(i)) return false;
-    }
     for (size_t i = 0; i < dense_layers_.size(); ++i) {
       if (dense_layer(i) != b.dense_layer(i)) return false;
     }
@@ -167,17 +139,15 @@ struct Para {
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), ("b", bn_layers_),
+    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), 
                        ("d", dense_layers_));
   }
 
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), ("b", bn_layers_),
+    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), 
                        ("d", dense_layers_));
   }
-
-  BnLayer const& bn_layer(size_t order) const { return bn_layers_[order]; }
 
   ConvLayer const& conv_layer(size_t order) const {
     return conv_layers_[order];
@@ -187,11 +157,11 @@ struct Para {
     return dense_layers_[order];
   }
 
-  std::array<ConvLayer, 13> const& conv_layers() const { return conv_layers_; }
+  std::array<ConvLayer, kConvCount> const& conv_layers() const {
+    return conv_layers_;
+  }
 
-  std::array<BnLayer, 14> const& bn_layers() const { return bn_layers_; }
-
-  std::array<DenseLayer, 2> const& dense_layers() const {
+  std::array<DenseLayer, kDenseCount> const& dense_layers() const {
     return dense_layers_;
   }
 
@@ -202,9 +172,6 @@ struct Para {
     for (size_t i = 0; i < conv_layers_.size(); ++i) {
       conv_layers_[i] = ConvLayer(dbl_para.conv_layer(i));
     }
-    for (size_t i = 0; i < bn_layers_.size(); ++i) {
-      bn_layers_[i] = BnLayer(dbl_para.bn_layer(i));
-    }
     for (size_t i = 0; i < dense_layers_.size(); ++i) {
       dense_layers_[i] = DenseLayer(dbl_para.dense_layer(i));
     }
@@ -212,9 +179,7 @@ struct Para {
 
   Para(std::string const& file) {
     Tick tick(__FN__);
-    if (!Load(file)) {
-      throw std::invalid_argument("invalid para file: " + file);
-    }
+    CHECK(Load(file), file);
   }
 
   bool Load(std::string const& file) {
@@ -242,26 +207,25 @@ struct Para {
       return false;
     }
 
-#ifdef _DEBUG_CHECK
-    try {
-      Para check(file);
-      if (check != *this) {
-        std::cout << "oops\n";
+    if (DEBUG_CHECK) {
+      try {
+        Para check(file);
+        if (check != *this) {
+          std::cout << "oops\n";
+          return false;
+        }
+      } catch (std::exception& e) {
+        std::cerr << e.what() << "\n";
         return false;
       }
-    } catch (std::exception& e) {
-      std::cerr << e.what() << "\n";
-      return false;
     }
-#endif
 
     return true;
   }
 
  private:
-  std::array<ConvLayer, 13> conv_layers_;
-  std::array<BnLayer, 14> bn_layers_;
-  std::array<DenseLayer, 2> dense_layers_;
+  std::array<ConvLayer, kConvCount> conv_layers_;
+  std::array<DenseLayer, kDenseCount> dense_layers_;
 };
 
 struct Image {
@@ -298,7 +262,7 @@ struct Image {
     ar& YAS_OBJECT_NVP("vgg16.image", ("d", data));
     auto c = C();
     auto d = D();
-    if (c * d * d != data.size()) throw std::runtime_error("oops");
+    CHECK(c * d * d == data.size(), "");
     pixels =
         boost::multi_array_ref<Fr, 3>(data.data(), boost::extents[c][d][d]);
   }

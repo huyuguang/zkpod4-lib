@@ -24,10 +24,6 @@ class ProveContext {
     para_com_sec_.reset(new ParaCommitmentSec(sec_path + "/para_com_sec"));
     image_com_pub_.reset(new ImageCommitmentPub(pub_path + "/image_com_pub"));
     image_com_sec_.reset(new ImageCommitmentSec(sec_path + "/image_com_sec"));
-
-#ifdef _DEBUG_CHECK
-
-#endif
   }
 
   std::array<Image const*, 35> const& const_images() const {

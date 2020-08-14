@@ -142,7 +142,7 @@ void Invoke(TaskContainer& tasks, bool direct = false) {
     tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
                          tasks[5], tasks[6], tasks[7], tasks[8]);
   } else {
-    throw std::runtime_error("");
+    CHECK(false, "");    
   }
 }
 

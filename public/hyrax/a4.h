@@ -59,10 +59,7 @@ struct A4 {
 
    private:
     void Check() {
-      if (com_pub.m() != (int64_t)a.size()) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(com_pub.m() == (int64_t)a.size(), "");
       for (auto const& i : a) {
         max_n = std::max(max_n, i.size());
       }
@@ -113,25 +110,19 @@ struct A4 {
 
    private:
     void Check() {
-      if (x.empty() || x.size() != a.size()) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(!x.empty() && x.size() == a.size(), "");
       for (size_t i = 0; i < x.size(); ++i) {
-        if (x[i].size() != a[i].size()) {
-          std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-          throw std::runtime_error("oops");
-        }
+        CHECK(x[i].size() == a[i].size(), "");
         max_n = std::max(max_n, x[i].size());
       }
 
-#ifdef _DEBUG_CHECK
-      Fr check_z = FrZero();
-      for (int64_t i = 0; i < m(); ++i) {
-        check_z += InnerProduct(x[i], a[i]);
+      if (DEBUG_CHECK) {
+        Fr check_z = FrZero();
+        for (int64_t i = 0; i < m(); ++i) {
+          check_z += InnerProduct(x[i], a[i]);
+        }
+        CHECK(z == check_z,"");
       }
-      assert(z == check_z);
-#endif
     }
   };
 
@@ -316,13 +307,14 @@ struct A4 {
     input.Update(alpha, beta, e, ee);
 
     UpdateCom(com_pub, com_sec, tl, tu, cl, cu, e, ee);
+
     // debug check com_pub2 and com_sec2
-#ifdef _DEBUG_CHECK
-    CommitmentPub check_com_pub;
-    ComputeCom(input, &check_com_pub, com_sec);
-    assert(check_com_pub.cx == com_pub.cx);
-    assert(check_com_pub.cz == com_pub.cz);
-#endif
+    if (DEBUG_CHECK) {
+      CommitmentPub check_com_pub;
+      ComputeCom(input, &check_com_pub, com_sec);
+      CHECK(check_com_pub.cx == com_pub.cx,"");
+      CHECK(check_com_pub.cz == com_pub.cz,"");
+    }
   }
 
   static void Prove(Proof& proof, h256_t seed, ProveInput&& input,
@@ -409,10 +401,7 @@ struct A4 {
 
   template <typename T>
   static void Permute(std::vector<size_t> const& order, std::vector<T>& v) {
-    if (order.size() != v.size()) {
-      std::cerr << __FN__ << " oops";
-      throw std::runtime_error("oops");
-    }
+    CHECK(order.size() == v.size(), "");
 
     std::vector<T> v2(v.size());
     for (size_t i = 0; i < order.size(); ++i) {

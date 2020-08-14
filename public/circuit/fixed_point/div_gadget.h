@@ -269,8 +269,7 @@ class DivGadget : public libsnark::gadget<Fr> {
     Fr a = this->pb.lc_val(a_);
     Fr sign_a = this->pb.lc_val(sign_a_);
     Fr check_sign_a = a.isNegative() ? 0 : 1;
-    assert(sign_a == check_sign_a);
-    if (sign_a != check_sign_a) throw std::runtime_error(__FN__);
+    CHECK(sign_a == check_sign_a,"");
     if (!sign_a_.is_constant()) {
       this->pb.val(abs_a_) = a.isNegative() ? -a : a;
     }
@@ -281,8 +280,7 @@ class DivGadget : public libsnark::gadget<Fr> {
     Fr sign_b = this->pb.lc_val(sign_b_);
     std::cout << "sign_b: " << sign_b << "\n";
     Fr check_sign_b = b.isNegative() ? 0 : 1;
-    assert(sign_b == check_sign_b);
-    if (sign_b != check_sign_b) throw std::runtime_error(__FN__);
+    CHECK(sign_b == check_sign_b,"");
     if (!sign_b_.is_constant()) {
       this->pb.val(abs_b_) = b.isNegative() ? -b : b;
     }

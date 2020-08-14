@@ -63,16 +63,10 @@ struct Sec53b {
 
    private:
     void Check() {
-      if (com_pub.a.size() != mn.size() || com_pub.b.size() != mn.size()) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(com_pub.a.size() == mn.size() && com_pub.b.size() == mn.size(), "");
 
       auto max_n = *std::max_element(mn.begin(), mn.end());
-      if (t.size() != max_n) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }      
+      CHECK(t.size() == max_n, "");
     }
   };
 
@@ -145,37 +139,25 @@ struct Sec53b {
 
    private:
      void Check() {
-      if (x.empty()) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(!x.empty(), "");
 
-      if (x.size() != y.size() || x.size() != yt.size()) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(x.size() == y.size() && x.size() == yt.size(), "");
 
       size_t max_n = 0;
       for (int64_t i = 0; i < m(); ++i) {
-        if (x[i].size() != y[i].size() || x[i].size() != yt[i].size()) {
-          std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-          throw std::runtime_error("oops");
-        }
+        CHECK(x[i].size() == y[i].size() && x[i].size() == yt[i].size(), "");
         max_n = std::max(max_n, x[i].size());
       }
 
-      if (t.size() != max_n) {
-        std::cerr << __FN__ << ":" << __LINE__ << " oops\n";
-        throw std::runtime_error("oops");
-      }
+      CHECK(t.size() == max_n, "");
 
 #ifdef _DEBUG
       Fr check_z = FrZero();
       for (int64_t i = 0; i < m(); ++i) {
-        assert(yt[i] == HadamardProduct(y[i], t));
+        CHECK(yt[i] == HadamardProduct(y[i], t));
         check_z += InnerProduct(x[i], yt[i]);
       }
-      assert(z == check_z);
+      CHECK(z == check_z,"");
 #endif
      }
   };
@@ -478,10 +460,7 @@ struct Sec53b {
 
   template <typename T>
   static void Permute(std::vector<size_t> const& order, std::vector<T>& v) {
-    if (order.size() != v.size()) {
-      std::cerr << __FN__ << " oops";
-      throw std::runtime_error("oops");
-    }
+    CHECK(order.size() == v.size(), "");
 
     std::vector<T> v2(v.size());
     for (size_t i = 0; i < order.size(); ++i) {

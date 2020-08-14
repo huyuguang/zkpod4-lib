@@ -48,17 +48,17 @@ struct ParallelR1cs {
           m(r1cs_info.num_constraints),
           s(r1cs_info.num_variables),
           n((int64_t)w[0].size()) {
-#ifdef _DEBUG
-      if ((int64_t)w.size() != s) throw std::runtime_error("opps");
-      if ((int64_t)com_w.size() != s) throw std::runtime_error("opps");
-      if ((int64_t)com_w_r.size() != s) throw std::runtime_error("opps");
+
+      CHECK((int64_t)w.size() == s, "");
+      CHECK((int64_t)com_w.size() == s, "");
+      CHECK((int64_t)com_w_r.size() == s, "");
       for (size_t i = 0; i < constraint_system().primary_input_size; ++i) {
-        if (com_w_r[i] != 0) throw std::runtime_error("opps");
+        CHECK(com_w_r[i] == 0, "");
       }
 
+#ifdef _DEBUG
       for (int64_t i = 0; i < s; ++i) {
-        if (com_w[i] != pc::ComputeCom(get_g, w[i], com_w_r[i]))
-          throw std::runtime_error("opps");
+        DCHECK(com_w[i] == pc::ComputeCom(get_g, w[i], com_w_r[i]), "");
       }
 #endif
 

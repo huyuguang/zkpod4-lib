@@ -11,7 +11,7 @@ namespace pc {
 // pedersen commitment base H&G
 class Base : boost::noncopyable {
  public:
-  static inline int64_t const kGSize = 4096 * 1025;
+  static inline int64_t const kGSize = 4096 * 1025 * 4;// *50;
 
   Base(std::string const& file) { LoadInternal(file); }
 
@@ -51,7 +51,7 @@ class Base : boost::noncopyable {
   void SaveInternal(std::string const& file) {
     Tick tick(__FN__);
     FILE* f = fopen(file.c_str(), "wb+");
-    if (!f) throw std::runtime_error("Create file failed");
+    CHECK(f, file);
 
     std::unique_ptr<FILE, decltype(&fclose)> auto_close(f, fclose);
 
@@ -59,43 +59,32 @@ class Base : boost::noncopyable {
     header.header_size = sizeof(Header);
     header.g_size = kGSize;
 
-    if (!WriteHeader(f, header)) {
-      throw std::runtime_error("Write header failed");
-    }
-
-    if (!WriteG1(f, h_)) {
-      throw std::runtime_error("Write pedersen_base failed");
-    }
-
-    if (!WriteG1(f, u_)) {
-      throw std::runtime_error("Write pedersen_base failed");
-    }
-
+    CHECK(WriteHeader(f, header), "");
+    CHECK(WriteG1(f, h_), "");
+    CHECK(WriteG1(f, u_), "");
     for (auto& i : g_) {
-      if (!WriteG1(f, i)) {
-        throw std::runtime_error("Write pedersen_base failed");
-      }
+      CHECK(WriteG1(f, i), "");
     }
   }
 
   void LoadInternal(std::string const& file) {
     Tick tick(__FN__);
     FILE* f = fopen(file.c_str(), "rb");
-    if (!f) throw std::runtime_error("Open failed");
+    CHECK(f, file);
 
     std::unique_ptr<FILE, decltype(&fclose)> auto_close(f, fclose);
 
     Header header;
-    if (!ReadHeader(f, header)) throw std::runtime_error("Read header failed");
+    CHECK(ReadHeader(f, header), file);
 
-    if (header.g_size != kGSize) throw std::runtime_error("Invalid data");
+    CHECK(header.g_size == kGSize, file);
 
-    if (!ReadG1(f, h_)) throw std::runtime_error("Read pedersen_base failed");
+    CHECK(ReadG1(f, h_), file);
 
-    if (!ReadG1(f, u_)) throw std::runtime_error("Read pedersen_base failed");
+    CHECK(ReadG1(f, u_), file);
 
     for (auto& i : g_) {
-      if (!ReadG1(f, i)) throw std::runtime_error("Read pedersen_base failed");
+      CHECK(ReadG1(f, i), file);
     }
   }
 
@@ -210,6 +199,7 @@ inline G1 const& PcG(int64_t i) {
   if (i == -1) {
     return base.u();
   } else {
+    CHECK(i < Base::kGSize, std::to_string(i));
     return base.g()[i];
   }
 }
@@ -230,7 +220,7 @@ inline G1 const& PcHG(int64_t i) {
 }
 
 inline GetRefG1 const kGetRefG1 = [](int64_t i) -> G1 const& {
-  if (i >= Base::kGSize) throw std::runtime_error("oops");
+  CHECK(i < Base::kGSize, std::to_string(i));
   return pc::PcG()[i];
 };
 

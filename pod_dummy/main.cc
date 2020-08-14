@@ -17,6 +17,12 @@
 #include "misc/misc.h"
 #include "public.h"
 
+#ifdef _DEBUG
+bool DEBUG_CHECK = true;
+#else
+bool DEBUG_CHECK = false;
+#endif
+
 bool InitAll(std::string const& data_dir) {
   InitEcc();
 
@@ -184,8 +190,10 @@ int main(int argc, char** argv) {
   int64_t mcl_n = 0;
   Param2Str vgg16_publish;
   Param2Str vgg16_infer;
+  Param2Str vgg16_dbl_infer;
   Param2Str vgg16_prove;
   bool vgg16_test = false;
+  bool debug_check = false;
 
   try {
     po::options_description options("command line options");
@@ -230,13 +238,17 @@ int main(int argc, char** argv) {
         "pc_commitment", po::value<int64_t>(&pc_commitment_n), "")(
         "multiexp", po::value<int64_t>(&multiexp_n), "")(
         "disable_vrs_cache", "")("mcl", po::value<int64_t>(&mcl_n), "")(
-        "opening", "")("equality", "")("equality2", "")("vcp_mnist", "")("iop", "")(
+        "opening", "")("equality", "")("equality2", "")("vcp_mnist", "")("iop",
+                                                                         "")(
         "vgg16_publish", po::value<Param2Str>(&vgg16_publish),
         "\"para_path working_path\", ex: /vgg16/features /temp/vgg16")(
         "vgg16_infer", po::value<Param2Str>(&vgg16_infer),
         "\"test_image_path working_path\"")(
-        "vgg16_prove", po::value<Param2Str>(&vgg16_prove),
-        "test_image_path working_path")("vgg16_test", "");
+        "vgg16_dbl_infer", po::value<Param2Str>(&vgg16_dbl_infer),
+        "\"para_path test_image_path\"")("vgg16_prove",
+                                         po::value<Param2Str>(&vgg16_prove),
+                                         "test_image_path working_path")(
+        "vgg16_test", "")("debug_check", po::value<bool>(&debug_check));
 
     boost::program_options::variables_map vmap;
 
@@ -305,6 +317,10 @@ int main(int argc, char** argv) {
 
     if (vmap.count("vgg16_test")) {
       vgg16_test = true;
+    }
+
+    if (vmap.count("debug_check")) {
+      DEBUG_CHECK = debug_check;
     }
   } catch (std::exception& e) {
     std::cout << "Unknown parameters.\n"
@@ -694,8 +710,11 @@ int main(int argc, char** argv) {
         clink::vgg16::Publish(vgg16_publish.s1, vgg16_publish.s2);
   }
 
+  if (vgg16_dbl_infer.valid()) {
+    clink::vgg16::dbl::Test(vgg16_dbl_infer.s1, vgg16_dbl_infer.s2);
+  }
+
   if (vgg16_infer.valid()) {
-    //clink::vgg16::dbl::Test();
     rets["vgg16_infer"] = clink::vgg16::TestInfer(
         vgg16_infer.s1, vgg16_infer.s2);
   }
