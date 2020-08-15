@@ -27,7 +27,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   });
 
   // conv
-  for (size_t i = 0; i < 1/*kConvCount*/; ++i) {
+  for (size_t i = 0; i < 0/*kConvCount*/; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       return OneConvVerifyPreprocess(seed, context, kConvLayers[i],
                                      proof.conv[i], adapt_man, r1cs_man);
