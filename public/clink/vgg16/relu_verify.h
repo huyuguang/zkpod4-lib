@@ -123,6 +123,7 @@ inline bool ReluVerifyPreprocess(h256_t seed, VerifyContext const& context,
     CHECK(ReluR1csVerifyPreprocess(seed, context, proof, r1cs_man), "");
   };
 
+  parallel::Invoke(tasks);
   return true;
 }
 }  // namespace clink::vgg16

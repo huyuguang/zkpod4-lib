@@ -142,6 +142,8 @@ inline bool PoolingVerifyPreprocess(h256_t seed, VerifyContext const& context,
     CHECK(PoolingOutputVerifyPreprocess(seed, context, proof, adapt_man),"");
   };
 
+  parallel::Invoke(tasks);
+
   return true;
 }
 }  // namespace clink::vgg16

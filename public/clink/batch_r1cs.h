@@ -126,16 +126,12 @@ struct BatchR1cs {
     Tick tick(__FN__);
 
     for (auto const& input : inputs) {
-      if (!input->Check()) {
-        assert(false);
-        std::cerr << input->unique_tag << " " << __FN__ << ":" << __LINE__ << " oops\n";
-        return false;
-      }
+      CHECK(input->Check(), input->unique_tag);
     }
 
     auto const& get_g = inputs[0]->get_g;
     for (auto const& input : inputs) {
-      if (input->get_g(0) != get_g(0)) throw std::runtime_error("oops");
+      CHECK(input->get_g(0) == get_g(0), input->unique_tag);
     }
 
     std::sort(inputs.begin(), inputs.end(), [](auto const& a, auto const& b) {

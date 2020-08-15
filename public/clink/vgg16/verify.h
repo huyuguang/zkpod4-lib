@@ -66,10 +66,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   bool all_success = false;
   auto f1 = [&tasks](int64_t i) { return tasks[i](); };
   parallel::For(&all_success, tasks.size(), f1);
-  if (!all_success) {
-    std::cout << __FN__ << " " << __LINE__ << " Verify failed\n";
-    return false;
-  }
+  CHECK(all_success,"verify failed");
 
   std::vector<parallel::BoolTask> bool_tasks;
   bool_tasks.emplace_back([&seed, &adapt_man, &proof]() {
@@ -82,12 +79,9 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
 
   auto f2 = [&bool_tasks](int64_t i) { return bool_tasks[i](); };
 
-  parallel::For(&all_success, bool_tasks.size(), f2);
+  parallel::For(&all_success, bool_tasks.size(), f2, true); // TODO: false, for debug
 
-  if (!all_success) {
-    std::cout << __FN__ << " " << __LINE__ << " Verify failed\n";
-    return false;
-  }
+  CHECK(all_success,"verify failed");
 
   return all_success;
 }
