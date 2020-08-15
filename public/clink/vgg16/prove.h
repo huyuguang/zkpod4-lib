@@ -140,7 +140,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   {
     Tick subtick("preprocess");
     auto f1 = [&tasks](int64_t i) { tasks[i](); };
-    parallel::For(tasks.size(), f1);
+    parallel::For(tasks.size(), f1, true);
   }  
 
   std::vector<parallel::VoidTask> void_tasks;
