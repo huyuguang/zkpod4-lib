@@ -248,7 +248,7 @@ struct A4 {
   static void UpdateCom(CommitmentPub& com_pub, CommitmentSec& com_sec,
                         Fr const& tl, Fr const& tu, G1 const& cl, G1 const& cu,
                         Fr const& e, Fr const& ee) {
-    Tick tick(__FN__, input.to_string());
+    Tick tick(__FN__);
     CommitmentPub com_pub2;
     CommitmentSec com_sec2;
     auto m2 = com_pub.cx.size() / 2;
