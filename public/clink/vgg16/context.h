@@ -26,7 +26,7 @@ class ProveContext {
     image_com_sec_.reset(new ImageCommitmentSec(sec_path + "/image_com_sec"));
   }
 
-  std::array<Image const*, 35> const& const_images() const {
+  std::array<Image const*, kImageCount> const& const_images() const {
     return const_images_;
   }
 
@@ -43,8 +43,8 @@ class ProveContext {
   ImageCommitmentSec const& image_com_sec() const { return *image_com_sec_; }
 
  private:
-  std::array<std::unique_ptr<Image>, 35> images_;
-  std::array<Image const*, 35> const_images_;
+  std::array<std::unique_ptr<Image>, kImageCount> images_;
+  std::array<Image const*, kImageCount> const_images_;
   std::unique_ptr<AuxiPub> auxi_;
   std::unique_ptr<Para> para_;
   std::unique_ptr<ParaCommitmentPub> para_com_pub_;
