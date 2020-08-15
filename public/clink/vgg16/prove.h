@@ -46,7 +46,7 @@ inline bool InferAndCommit(dbl::Image const& test_image,
 }
 
 struct Proof {
-  std::array<OneConvProof, 13> conv;
+  std::array<OneConvProof, kConvCount> conv;
   ReluProof relubn;
   PoolingProof pooling;
   DenseProof dense0;
@@ -101,7 +101,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   std::vector<parallel::VoidTask> tasks;
 
   // conv
-  for (size_t i = 0; i < 1/*kConvCount*/; ++i) {
+  for (size_t i = 0; i < 0/*kConvCount*/; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
                              adapt_man, r1cs_man);
@@ -155,7 +155,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   });
 
   auto f2 = [&void_tasks](int64_t i) { void_tasks[i](); };
-  parallel::For(void_tasks.size(), f2);
+  parallel::For(void_tasks.size(), f2, true);
 
   return true;
 }

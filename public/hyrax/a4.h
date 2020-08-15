@@ -38,8 +38,10 @@ struct A4 {
     size_t max_n = 0;
 
     int64_t m() const { return com_pub.m(); }
-
     int64_t n() const { return max_n; }
+    std::string to_string() const {
+      return std::to_string(m()) + "," + std::to_string(n());
+    }
 
     void SortAndAlign() {
       auto order = GetSortOrder(a);
@@ -76,7 +78,9 @@ struct A4 {
 
     int64_t m() const { return (int64_t)x.size(); }
     int64_t n() const { return (int64_t)max_n; }
-
+    std::string to_string() const {
+      return std::to_string(m()) + "," + std::to_string(n());
+    }
     ProveInput(std::vector<std::vector<Fr>>&& x,
                std::vector<std::vector<Fr>>&& a, Fr const& z,
                GetRefG1 const& get_gx, G1 const& gz)
@@ -93,7 +97,7 @@ struct A4 {
     }
 
     void Update(Fr const& alpha, Fr const& beta, Fr const& e, Fr const& ee) {
-      Tick tick(__FN__, std::to_string(m()) + "," + std::to_string(n()));
+      Tick tick(__FN__, to_string());
       auto m2 = m() / 2;
       std::vector<std::vector<Fr>> x2(m2);
       std::vector<std::vector<Fr>> a2(m2);
@@ -121,7 +125,7 @@ struct A4 {
         for (int64_t i = 0; i < m(); ++i) {
           check_z += InnerProduct(x[i], a[i]);
         }
-        CHECK(z == check_z,"");
+        CHECK(z == check_z, "");
       }
     }
   };
@@ -181,7 +185,7 @@ struct A4 {
 
   static void ComputeCom(ProveInput const& input, CommitmentPub* com_pub,
                          CommitmentSec const& com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     auto const m = input.m();
     // auto const n = input.n();
 
@@ -210,8 +214,8 @@ struct A4 {
   static void ProveFinal(Proof& proof, h256_t const& seed,
                          ProveInput const& input, CommitmentPub const& com_pub,
                          CommitmentSec const& com_sec) {
-    Tick tick(__FN__);
-    assert(input.m() == 1);
+    Tick tick(__FN__, input.to_string());
+    CHECK(input.m() == 1, "");
 
     A3::ProveInput input_a3(input.x[0], input.a[0], input.z, input.get_gx,
                             input.gz);
@@ -221,7 +225,7 @@ struct A4 {
   }
 
   static void ComputeSigmaXA(ProveInput const& input, Fr* alpha, Fr* beta) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     int64_t m = input.m();
     auto m2 = m / 2;
     std::vector<Fr> xa1(m2, FrZero());
@@ -244,7 +248,7 @@ struct A4 {
   static void UpdateCom(CommitmentPub& com_pub, CommitmentSec& com_sec,
                         Fr const& tl, Fr const& tu, G1 const& cl, G1 const& cu,
                         Fr const& e, Fr const& ee) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     CommitmentPub com_pub2;
     CommitmentSec com_sec2;
     auto m2 = com_pub.cx.size() / 2;
@@ -285,7 +289,7 @@ struct A4 {
 
   static void ProveRecursive(Proof& proof, h256_t& seed, ProveInput& input,
                              CommitmentPub& com_pub, CommitmentSec& com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     assert(input.m() > 1);
 
     Fr alpha, beta;
@@ -312,15 +316,15 @@ struct A4 {
     if (DEBUG_CHECK) {
       CommitmentPub check_com_pub;
       ComputeCom(input, &check_com_pub, com_sec);
-      CHECK(check_com_pub.cx == com_pub.cx,"");
-      CHECK(check_com_pub.cz == com_pub.cz,"");
+      CHECK(check_com_pub.cx == com_pub.cx, "");
+      CHECK(check_com_pub.cz == com_pub.cz, "");
     }
   }
 
   static void Prove(Proof& proof, h256_t seed, ProveInput&& input,
                     CommitmentPub&& com_pub, CommitmentSec&& com_sec) {
-    Tick tick(__FN__);
-    
+    Tick tick(__FN__, input.to_string());
+
     input.SortAndAlign(com_pub, com_sec);
 
     while (input.m() > 1) {
@@ -330,7 +334,7 @@ struct A4 {
   }
 
   static bool Verify(Proof const& proof, h256_t seed, VerifyInput input) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
 
     input.SortAndAlign();
 
@@ -383,9 +387,8 @@ struct A4 {
       order[i] = i;
     }
 
-    std::stable_sort(order.begin(), order.end(), [&mn](size_t a, size_t b) {
-      return mn[a] > mn[b];
-    });
+    std::stable_sort(order.begin(), order.end(),
+                     [&mn](size_t a, size_t b) { return mn[a] > mn[b]; });
 
     return order;
   }
