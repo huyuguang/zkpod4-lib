@@ -20,7 +20,7 @@ struct A2 {
       assert(y == InnerProduct(x, a));
     }
     int64_t n() const { return (int64_t)x.size(); }
-    std::vector<Fr> const& x;  // x.size = n
+    std::vector<Fr> const& x;  // x.size = n // TODO: change to move
     std::vector<Fr> const& a;  // a.size = n
     Fr const y;                // y = <x, a>
     GetRefG1 const get_gx;

@@ -53,6 +53,9 @@ struct Sec53b {
     }
     int64_t m() const { return com_pub.m(); }
     int64_t n() const { return t.size(); }
+    std::string to_string() const {
+      return std::to_string(m()) + "*" + std::to_string(n());
+    }
 
     std::vector<size_t> const& mn;
     std::vector<Fr> const& t;  // size = n
@@ -82,6 +85,9 @@ struct Sec53b {
 
     int64_t m() const { return x.size(); }
     int64_t n() const { return t.size(); }
+    std::string to_string() const {
+      return std::to_string(m()) + "*" + std::to_string(n());
+    }
 
     ProveInput(std::vector<std::vector<Fr>>&& x,
                std::vector<std::vector<Fr>>&& y, std::vector<Fr>const & t,
@@ -109,7 +115,7 @@ struct Sec53b {
 
     void Update(Fr const& sigma_xy1, Fr const& sigma_xy2, Fr const& e,
                 Fr const& ee) {
-      Tick tick(__FN__, std::to_string(m()) + "," + std::to_string(n()));
+      Tick tick(__FN__, to_string());
       auto m2 = m() / 2;
 
       {
@@ -213,25 +219,32 @@ struct Sec53b {
 
   static void ComputeCom(ProveInput const& input, CommitmentPub* com_pub,
                          CommitmentSec const& com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     auto const m = input.m();
     auto const n = input.n();
 
     com_pub->a.resize(m);
     com_pub->b.resize(m);
-
+    
     auto parallel_f = [&input, &com_pub, &com_sec](int64_t i) {
-      com_pub->a[i] = pc::ComputeCom(input.get_gx, input.x[i], com_sec.r[i]);
-      com_pub->b[i] = pc::ComputeCom(input.get_gy, input.y[i], com_sec.s[i]);
+      std::array<parallel::VoidTask, 2> tasks;
+      tasks[0] = [&com_pub, &com_sec, &input, i]() {
+        com_pub->a[i] = pc::ComputeCom(input.get_gx, input.x[i], com_sec.r[i]);
+      };
+      tasks[0] = [&com_pub, &com_sec, &input, i]() {
+        com_pub->b[i] = pc::ComputeCom(input.get_gy, input.y[i], com_sec.s[i]);
+      };
+      parallel::Invoke(tasks);
     };
-    parallel::For(m, parallel_f, m * n < 16 * 1024);
+    parallel::For(m, parallel_f);
 
     com_pub->c = pc::ComputeCom(input.gz, input.z, com_sec.t);
   }
 
   static void ComputeCom(ProveInput const& input, CommitmentPub* com_pub,
                          CommitmentSec* com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
+
     auto const m = input.m();
     com_sec->r.resize(m);
     FrRand(com_sec->r.data(), m);
@@ -247,8 +260,8 @@ struct Sec53b {
   static void ProveFinal(Proof& proof, h256_t const& seed,
                          ProveInput const& input, CommitmentPub const& com_pub,
                          CommitmentSec const& com_sec) {
-    Tick tick(__FN__);
-    assert(input.m() == 1);
+    Tick tick(__FN__, input.to_string());
+    DCHECK(input.m() == 1, "");
 
     typename Sec51::ProveInput input_51(input.x[0], input.y[0], input.t,
                                         input.yt[0], input.z, input.get_gx,
@@ -263,7 +276,7 @@ struct Sec53b {
 
   static void ComputeSigmaXY(ProveInput const& input, Fr* sigma_xy1,
                              Fr* sigma_xy2) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     int64_t m = input.m();
     int64_t n = input.n();
     auto m2 = m / 2;
@@ -287,7 +300,7 @@ struct Sec53b {
   static void UpdateCom(CommitmentPub& com_pub, CommitmentSec& com_sec,
                         Fr const& tl, Fr const& tu, G1 const& cl, G1 const& cu,
                         Fr const& e, Fr const& ee) {
-    // Tick tick(__FN__);
+    Tick tick(__FN__);
     CommitmentPub com_pub2;
     CommitmentSec com_sec2;
     auto m2 = com_pub.a.size() / 2;
@@ -339,7 +352,7 @@ struct Sec53b {
 
   static void ProveRecursive(Proof& proof, h256_t& seed, ProveInput& input,
                              CommitmentPub& com_pub, CommitmentSec& com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     assert(input.m() > 1);
 
     Fr sigma_xy1, sigma_xy2;
@@ -373,7 +386,8 @@ struct Sec53b {
 
   static void Prove(Proof& proof, h256_t seed, ProveInput&& input,
                     CommitmentPub&& com_pub, CommitmentSec&& com_sec) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
+
     assert(pc::Base::kGSize >= input.n());
     
     input.SortAndAlign(com_pub, com_sec);
@@ -386,7 +400,7 @@ struct Sec53b {
 
   static bool Verify(Proof const& proof, h256_t seed,
                      VerifyInput&& input) {
-    Tick tick(__FN__);
+    Tick tick(__FN__, input.to_string());
     
     input.SortAndAlign();
 

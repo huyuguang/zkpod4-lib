@@ -27,7 +27,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   });
 
   // conv
-  for (size_t i = 0; i < 0/*kConvCount*/; ++i) {
+  for (size_t i = 0; i < kConvCount; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       return OneConvVerifyPreprocess(seed, context, kConvLayers[i],
                                      proof.conv[i], adapt_man, r1cs_man);
@@ -79,7 +79,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
 
   auto f2 = [&bool_tasks](int64_t i) { return bool_tasks[i](); };
 
-  parallel::For(&all_success, bool_tasks.size(), f2, true); // TODO: false, for debug
+  parallel::For(&all_success, bool_tasks.size(), f2);
 
   CHECK(all_success,"verify failed");
 

@@ -19,7 +19,7 @@ struct A3 {
       assert(y == InnerProduct(x, a));
     }
     int64_t n() const { return (int64_t)x.size(); }
-    std::vector<Fr> const& x;  // x.size = n
+    std::vector<Fr> const& x;  // x.size = n // TODO: change to move
     std::vector<Fr> const& a;  // a.size = n
     Fr const y;                // y = <x, a>
     GetRefG1 const get_gx;
@@ -108,6 +108,7 @@ struct A3 {
     CommitmentPub const& com_pub;
     GetRefG1 const get_gx;
     G1 const gy;
+    int64_t n() const { return (int64_t)a.size(); }
   };
 
   static void UpdateSeed(h256_t& seed, std::vector<Fr> const& a,
@@ -145,6 +146,7 @@ struct A3 {
   template <typename T>
   static void Divide(std::vector<T> const& t, std::vector<T>& t1,
                      std::vector<T>& t2, T const& t0) {
+    Tick tick(__FN__);
     auto n = t.size();
     auto half = misc::Pow2UB(n) / 2;
     t1.resize(half);
@@ -156,7 +158,7 @@ struct A3 {
 
   static void ComputeCom(CommitmentPub& com_pub, CommitmentSec const& com_sec,
                          ProveInput const& input) {
-    // Tick tick(__FN__);
+    Tick tick(__FN__);
     std::array<parallel::VoidTask, 2> tasks;
     tasks[0] = [&com_pub, &input, &com_sec]() {
       com_pub.xi =
@@ -168,8 +170,10 @@ struct A3 {
     parallel::Invoke(tasks, true);
   }
 
+  // TODO: change to move
   static void Prove(Proof& proof, h256_t seed, ProveInput input,
                     CommitmentPub com_pub, CommitmentSec com_sec) {
+    Tick tick(__FN__, std::to_string(input.n()));
     UpdateSeed(seed, input.a, com_pub);
 
     auto x = input.x;
@@ -263,6 +267,7 @@ struct A3 {
 
   static void BuildS(std::vector<Fr>& s, std::vector<Fr> const& c,
                      std::vector<Fr> const& d, std::vector<Fr> const& cc) {
+    Tick tick(__FN__);
     assert(c.size() == d.size());
     auto round = c.size();
     assert(s.size() <= (1ULL << round));
@@ -302,7 +307,8 @@ struct A3 {
 
   static bool Verify(Proof const& proof, h256_t seed,
                      VerifyInput const& input) {
-    auto n = input.a.size();
+    Tick tick(__FN__, std::to_string(input.n()));
+    auto n = input.n();
     if (!n || (int64_t)misc::Pow2UB(n) != proof.aligned_n()) {
       return false;
     }

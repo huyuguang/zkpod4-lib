@@ -9,7 +9,7 @@ inline bool OneConvInputVerifyPreprocess(h256_t seed,
                                          size_t layer,
                                          OneConvProof const& proof,
                                          AdaptVerifyItemMan& adapt_man) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(layer));
 
   struct Ctx {
     std::array<std::vector<Fr>, 9> r;
@@ -80,7 +80,7 @@ inline bool OneConvR1csVerifyPreprocess(h256_t seed,
                                         VerifyContext const& context,
                                         size_t layer, OneConvProof const& proof,
                                         R1csVerifyItemMan& r1cs_man) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(layer));
   (void)seed;
   auto K = kImageInfos[layer + 1].C;
   auto C = kImageInfos[layer].C;
@@ -118,7 +118,7 @@ inline bool OneConvOutputVerifyPreprocess(h256_t seed,
                                           size_t layer,
                                           OneConvProof const& proof,
                                           AdaptVerifyItemMan& adapt_man) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(layer));
   namespace fp = circuit::fp;
   auto K = kImageInfos[layer + 1].C;
   auto C = kImageInfos[layer].C;
@@ -167,7 +167,7 @@ inline bool OneConvVerifyPreprocess(h256_t seed, VerifyContext const& context,
                                     size_t layer, OneConvProof const& proof,
                                     AdaptVerifyItemMan& adapt_man,
                                     R1csVerifyItemMan& r1cs_man) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(layer));
 
   std::array<parallel::VoidTask, 3> tasks;
   tasks[0] = [&seed, &context, &layer, &proof, &adapt_man]() {

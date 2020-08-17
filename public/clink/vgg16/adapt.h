@@ -117,15 +117,15 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
   }
   
   for (auto const& i : items) {
-    std::cout << __FN__ << " " << i.order_tag << "," << i.a.size() << "*"
-              << i.a[0].size() << "\n";
+    std::cout << Tick::GetIndentString() << i.order_tag << "," << i.a.size()
+              << "*" << i.a[0].size() << "\n";
   }
 
   AdaptUpdateSeed(seed, items);
 
   std::vector<Fr> e(items.size());
   AdaptComputeFst(seed, e);
-  std::cout << __FN__ << "  " << e[0] << "\n";
+  // std::cout << __FN__ << "  " << e[0] << "\n";
 
   auto pf = [&items,&e](int64_t i) {
     for (auto& j : items[i].a) {
@@ -191,7 +191,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
 
   std::vector<Fr> e(items.size());
   AdaptComputeFst(seed, e);
-  std::cout << __FN__ << " " << e[0] << "\n";
+  std::cout << Tick::GetIndentString() << " " << e[0] << "\n";
 
   auto pf = [&items,&e](int64_t i) {
     for (auto& j : items[i].a) {
@@ -224,7 +224,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
   hyrax::A4::VerifyInput input(std::move(com_pub), pc::kGetRefG1,
                                std::move(combined_a), pc::PcU());
   bool success = hyrax::A4::Verify(proof, seed, input);
-  std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";
+  std::cout << Tick::GetIndentString() << ": " << success << "\n\n\n\n\n\n";
   return success;
 }
 

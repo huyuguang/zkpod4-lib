@@ -88,6 +88,7 @@ struct Sec51c {
   static void Prove(Proof& proof, h256_t seed, ProveInput const& input,
                     CommitmentPub const& com_pub,
                     CommitmentSec const& com_sec) {
+    Tick tick(__FN__, std::to_string(input.n()));
     UpdateSeed(seed, com_pub, input.t);
     Fr com_yt_r = FrRand();
     proof.com_yt = pc::ComputeCom(input.get_gyt, input.yt, com_yt_r);
@@ -226,6 +227,7 @@ struct Sec51c {
   static void ProveYt(Proof& proof, h256_t seed, ProveInput const& input,
                       CommitmentPub const& com_pub,
                       CommitmentSec const& com_sec, Fr const& com_yt_r) {
+    Tick tick(__FN__, std::to_string(input.n()));
     std::vector<Fr> e(input.n());
     ComputeFst1(seed, "sec51c", e);
 

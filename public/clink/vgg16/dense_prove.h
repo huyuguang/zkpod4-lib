@@ -95,7 +95,7 @@ static std::vector<Fr> ComputeDenseFst(h256_t const& seed) {
 template <size_t M, size_t N>
 static void ProveDense(h256_t seed, ProveDenseInput<M, N> const& input,
                        DenseProof& proof) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(M) + "->" + std::to_string(N));
   namespace fp = circuit::fp;
 
   // prove
@@ -140,7 +140,7 @@ static void ProveDense(h256_t seed, ProveDenseInput<M, N> const& input,
 
 template <size_t kOrder>
 void DenseProve(h256_t seed, ProveContext const& context, DenseProof& proof) {
-  Tick tick(__FN__);
+  Tick tick(__FN__, std::to_string(kOrder));
 
   constexpr size_t kLayer = kDenseLayers[kOrder];
   constexpr ImageInfo const& info_in = kImageInfos[kLayer];

@@ -180,6 +180,7 @@ void serialize(Ar& ar, Proof& t) {
 
 inline void Prove(Proof& proof, h256_t seed, ProveInput&& input,
                   CommitmentPub const& com_pub, CommitmentSec const& com_sec) {
+  Tick tick(__FN__, std::to_string(input.n));
   CommitmentExtSec com_ext_sec(input.n);
   ComputeComExt(proof.com_ext_pub, com_ext_sec, input);
   CommitmentExtPub& com_ext_pub = proof.com_ext_pub;

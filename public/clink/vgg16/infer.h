@@ -256,7 +256,7 @@ inline void Infer(Para const& para, dbl::Image const& dbl_image,
   }
 
   InferConv(para.conv_layer(0), *images[0], *images[1]);
-  //return;// TODO
+  
   InferRelu(*images[1], *images[2]);
 
   InferConv(para.conv_layer(1), *images[2], *images[3]);

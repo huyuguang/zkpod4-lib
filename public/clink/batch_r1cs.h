@@ -56,7 +56,7 @@ struct BatchR1cs {
     });
 
     UpdateSeed(seed, inputs);
-    std::cout << __FN__ << " " << misc::HexToStr(seed) << "\n";
+    // std::cout << Tick::GetIndentString() << " " << misc::HexToStr(seed) << "\n";
 
     std::vector<typename Sec43::CommitmentPub> com_pubs(inputs.size());
     std::vector<typename Sec43::CommitmentSec> com_secs(inputs.size());

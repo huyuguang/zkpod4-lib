@@ -31,8 +31,12 @@ inline void R1csProve(h256_t seed, R1csProveItemMan& item_man,
   Tick tick(__FN__);
   std::vector<R1csProveItem> items;
   item_man.take(items);
-  std::cout << __FN__ << " items size: " << items.size() << "\n";
   if (items.empty()) return;
+
+  for (auto const& i : items) {
+    std::cout << Tick::GetIndentString() << i.r1cs_input->unique_tag << ","
+              << i.r1cs_input->m << "*" << i.r1cs_input->n << "\n";
+  }  
 
   std::vector<BatchR1cs<Policy>::ProveInput*> inputs(items.size());
   for (size_t i = 0; i < inputs.size(); ++i) {
@@ -46,14 +50,13 @@ inline bool R1csVerify(h256_t seed, R1csVerifyItemMan& item_man,
   Tick tick(__FN__);
   std::vector<R1csVerifyItem> items;
   item_man.take(items);
-  std::cout << __FN__ << " items size: " << items.size() << "\n";
   if (items.empty()) return true;
 
   std::vector<BatchR1cs<Policy>::VerifyInput*> inputs(items.size());
   for (size_t i = 0; i < inputs.size(); ++i) {
     inputs[i] = items[i].r1cs_input.get();
-    std::cout << inputs[i]->unique_tag
-              << ", public_w.size(): " << inputs[i]->public_w.size() << "\n";
+    //std::cout << Tick::GetIndentString() << inputs[i]->unique_tag
+    //          << ", public_w.size(): " << inputs[i]->public_w.size() << "\n";
   }
 
   return BatchR1cs<Policy>::Verify(proof, seed, std::move(inputs));

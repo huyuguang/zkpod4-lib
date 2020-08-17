@@ -101,7 +101,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   std::vector<parallel::VoidTask> tasks;
 
   // conv
-  for (size_t i = 0; i < 0/*kConvCount*/; ++i) {
+  for (size_t i = 0; i < kConvCount; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
                              adapt_man, r1cs_man);
@@ -140,7 +140,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   {
     Tick subtick("preprocess");
     auto f1 = [&tasks](int64_t i) { tasks[i](); };
-    parallel::For(tasks.size(), f1, true);
+    parallel::For(tasks.size(), f1);
   }  
 
   std::vector<parallel::VoidTask> void_tasks;
@@ -155,7 +155,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   });
 
   auto f2 = [&void_tasks](int64_t i) { void_tasks[i](); };
-  parallel::For(void_tasks.size(), f2, true);
+  parallel::For(void_tasks.size(), f2);
 
   return true;
 }
