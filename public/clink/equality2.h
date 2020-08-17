@@ -71,7 +71,7 @@ struct Equality2 {
       else
         return get_gu(i - n);
     };
-    hyrax::A3::ProveInput input(W, S, FrZero(), get_g, G1Zero());
+    hyrax::A3::ProveInput input("equality2", W, S, FrZero(), get_g, G1Zero());
     hyrax::A3::CommitmentPub com_pub(cw, G1Zero());
     hyrax::A3::CommitmentSec com_sec(rw, FrZero());
     hyrax::A3::Prove(proof, seed, input, com_pub, com_sec);
@@ -113,7 +113,7 @@ struct Equality2 {
     };
 
     hyrax::A3::CommitmentPub com_pub(cw, G1Zero());
-    hyrax::A3::VerifyInput input(S, com_pub, get_g, G1Zero());
+    hyrax::A3::VerifyInput input("equality2", S, com_pub, get_g, G1Zero());
     return hyrax::A3::Verify(proof, seed, input);
   }
 

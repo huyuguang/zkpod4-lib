@@ -26,11 +26,12 @@ struct A4 {
   };
 
   struct VerifyInput {
-    VerifyInput(CommitmentPub&& com_pub, GetRefG1 const& get_gx,
+    VerifyInput(std::string const& tag, CommitmentPub&& com_pub, GetRefG1 const& get_gx,
                 std::vector<std::vector<Fr>>&& a, G1 const& gz)
-        : com_pub(std::move(com_pub)), get_gx(get_gx), a(std::move(a)), gz(gz) {
+        : tag(tag), com_pub(std::move(com_pub)), get_gx(get_gx), a(std::move(a)), gz(gz) {
       Check();
     }
+    std::string tag;
     CommitmentPub com_pub;
     GetRefG1 const& get_gx;
     std::vector<std::vector<Fr>> a;
@@ -40,7 +41,7 @@ struct A4 {
     int64_t m() const { return com_pub.m(); }
     int64_t n() const { return max_n; }
     std::string to_string() const {
-      return std::to_string(m()) + "," + std::to_string(n());
+      return tag + ": " + std::to_string(m()) + "," + std::to_string(n());
     }
 
     void SortAndAlign() {
@@ -69,6 +70,7 @@ struct A4 {
   };
 
   struct ProveInput {
+    std::string tag;
     std::vector<std::vector<Fr>> x;
     std::vector<std::vector<Fr>> a;
     Fr z;
@@ -79,12 +81,17 @@ struct A4 {
     int64_t m() const { return (int64_t)x.size(); }
     int64_t n() const { return (int64_t)max_n; }
     std::string to_string() const {
-      return std::to_string(m()) + "," + std::to_string(n());
+      return tag + ": " + std::to_string(m()) + "," + std::to_string(n());
     }
-    ProveInput(std::vector<std::vector<Fr>>&& x,
+    ProveInput(std::string const& tag, std::vector<std::vector<Fr>>&& x,
                std::vector<std::vector<Fr>>&& a, Fr const& z,
                GetRefG1 const& get_gx, G1 const& gz)
-        : x(std::move(x)), a(std::move(a)), z(z), get_gx(get_gx), gz(gz) {
+        : tag(tag),
+          x(std::move(x)),
+          a(std::move(a)),
+          z(z),
+          get_gx(get_gx),
+          gz(gz) {
       Check();
     }
 
@@ -217,8 +224,8 @@ struct A4 {
     Tick tick(__FN__, input.to_string());
     CHECK(input.m() == 1, "");
 
-    A3::ProveInput input_a3(input.x[0], input.a[0], input.z, input.get_gx,
-                            input.gz);
+    A3::ProveInput input_a3(input.tag, input.x[0], input.a[0], input.z,
+                            input.get_gx, input.gz);
     A3::CommitmentPub com_pub_a3(com_pub.cx[0], com_pub.cz);
     A3::CommitmentSec com_sec_a3(com_sec.r[0], com_sec.t);
     A3::Prove(proof.proof_a3, seed, input_a3, com_pub_a3, com_sec_a3);
@@ -375,7 +382,7 @@ struct A4 {
     assert(input.a.size() == 1);
 
     A3::CommitmentPub com_pub_a3(com_pub.cx[0], com_pub.cz);
-    A3::VerifyInput verifier_input_a3(input.a[0], com_pub_a3, input.get_gx,
+    A3::VerifyInput verifier_input_a3(input.tag, input.a[0], com_pub_a3, input.get_gx,
                                       input.gz);
     return A3::Verify(proof.proof_a3, seed, verifier_input_a3);
   }
@@ -475,7 +482,7 @@ struct A4 {
     };
 
     auto a_copy = a;
-    ProveInput prove_input(std::move(x), std::move(a), z, get_gx, pc::PcU());
+    ProveInput prove_input("test", std::move(x), std::move(a), z, get_gx, pc::PcU());
     CommitmentPub com_pub;
     CommitmentSec com_sec;
     ComputeCom(prove_input, &com_pub, &com_sec);
@@ -503,7 +510,7 @@ struct A4 {
     }
 #endif
 
-    VerifyInput verify_input(std::move(copy_com_pub), get_gx, std::move(a_copy),
+    VerifyInput verify_input("test", std::move(copy_com_pub), get_gx, std::move(a_copy),
                              pc::PcU());
     bool success = Verify(proof, seed, verify_input);
     std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";

@@ -124,7 +124,7 @@ static void ProveDense(h256_t seed, ProveDenseInput<M, N> const& input,
   DCHECK(z == InnerProduct(e, input.x), "");
 
   // prove left
-  HyraxA::ProveInput input_hy(input.y, x, z, pc::kGetRefG1, pc::PcG(0));
+  HyraxA::ProveInput input_hy("dense", input.y, x, z, pc::kGetRefG1, pc::PcG(0));
   HyraxA::CommitmentPub com_pub_hy(input.com_y, proof.com_z);
   HyraxA::CommitmentSec com_sec_hy(input.com_y_r, com_z_r);
   HyraxA::Prove(proof.proof_hy, seed, input_hy, com_pub_hy, com_sec_hy);

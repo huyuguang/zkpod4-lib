@@ -434,7 +434,7 @@ struct Mnist {
 #endif
 
     // prove left
-    hyrax::A2::ProveInput input_hy(output.data, x, z, pc::kGetRefG1,
+    hyrax::A2::ProveInput input_hy("mnist", output.data, x, z, pc::kGetRefG1,
                                    pc::PcG(0));
     hyrax::A2::CommitmentPub com_pub_hy(output.com, com_z);
     hyrax::A2::CommitmentSec com_sec_hy(output.com_r, com_z_r);
@@ -478,7 +478,7 @@ struct Mnist {
     }
 
     hyrax::A2::CommitmentPub com_pub_hy(proof.com, proof.com_z);
-    hyrax::A2::VerifyInput input_hy(x, com_pub_hy, pc::kGetRefG1, pc::PcG(0));
+    hyrax::A2::VerifyInput input_hy("mnist", x, com_pub_hy, pc::kGetRefG1, pc::PcG(0));
     if (!hyrax::A2::Verify(proof.proof_hy, seed, input_hy)) {
       assert(false);
       return false;

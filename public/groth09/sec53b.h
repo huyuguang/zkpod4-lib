@@ -221,7 +221,7 @@ struct Sec53b {
                          CommitmentSec const& com_sec) {
     Tick tick(__FN__, input.to_string());
     auto const m = input.m();
-    auto const n = input.n();
+    //auto const n = input.n();
 
     com_pub->a.resize(m);
     com_pub->b.resize(m);

@@ -156,7 +156,7 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
     }
   }
 
-  hyrax::A4::ProveInput input(std::move(combined_x), std::move(combined_a),
+  hyrax::A4::ProveInput input("adapt", std::move(combined_x), std::move(combined_a),
                               FrZero(), pc::kGetRefG1, pc::PcU());
   hyrax::A4::CommitmentPub com_pub;
   com_pub.cx = std::move(combined_cx);
@@ -221,7 +221,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
   hyrax::A4::CommitmentPub com_pub;
   com_pub.cx = std::move(combined_cx);
   com_pub.cz = G1Zero();
-  hyrax::A4::VerifyInput input(std::move(com_pub), pc::kGetRefG1,
+  hyrax::A4::VerifyInput input("adapt", std::move(com_pub), pc::kGetRefG1,
                                std::move(combined_a), pc::PcU());
   bool success = hyrax::A4::Verify(proof, seed, input);
   std::cout << Tick::GetIndentString() << ": " << success << "\n\n\n\n\n\n";

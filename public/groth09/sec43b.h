@@ -265,7 +265,7 @@ struct Sec43b {
       };
       parallel::For(n, parallel_f, n < 16 * 1024);
 
-      parahy.input_hy.reset(new typename HyraxA::ProveInput(
+      parahy.input_hy.reset(new typename HyraxA::ProveInput("43b",
           zk, t, input_53_z, input.get_gz, SelectSec53Gz()));
       auto& input_hy = *parahy.input_hy;
       (void)input_hy;
@@ -356,7 +356,7 @@ struct Sec43b {
     tasks[1] = [&ret_a2, &com_pub, &proof, &t, &k, &seed, &input]() {
       typename HyraxA::CommitmentPub com_pub_hy(MultiExpBdlo12(com_pub.c, k),
                                                 proof.c);
-      typename HyraxA::VerifyInput input_hy(t, com_pub_hy, input.get_gz,
+      typename HyraxA::VerifyInput input_hy("43b",t, com_pub_hy, input.get_gz,
                                             SelectSec53Gz());
       ret_a2 = HyraxA::Verify(proof.proof_a, seed, input_hy);
       assert(ret_a2);

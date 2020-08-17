@@ -83,7 +83,7 @@ struct EqualIp {
     Fr r_tau = FrRand();
     proof.com_z = pc::ComputeCom(input.gz, input.z, r_tau);
 
-    typename HyraxA::ProveInput input1(input.x, input.a, input.z, input.get_gx,
+    typename HyraxA::ProveInput input1("eip", input.x, input.a, input.z, input.get_gx,
                                        input.gz);
     typename HyraxA::CommitmentSec com_sec1;
     com_sec1.r_xi = input.com_x_r;
@@ -92,7 +92,7 @@ struct EqualIp {
     com_pub1.xi = input.com_x;
     com_pub1.tau = proof.com_z;
 
-    typename HyraxA::ProveInput input2(input.y, input.b, input.z, input.get_gy,
+    typename HyraxA::ProveInput input2("eip", input.y, input.b, input.z, input.get_gy,
                                        input.gz);
     typename HyraxA::CommitmentSec com_sec2;
     com_sec2.r_xi = input.com_y_r;
@@ -141,7 +141,7 @@ struct EqualIp {
       typename HyraxA::CommitmentPub com_pub;
       com_pub.xi = input.com_x;
       com_pub.tau = proof.com_z;
-      typename HyraxA::VerifyInput a_input(input.a, com_pub, input.get_gx,
+      typename HyraxA::VerifyInput a_input("eip", input.a, com_pub, input.get_gx,
                                            input.gz);
       rets[0] = HyraxA::Verify(proof.p1, seed, a_input);
     };
@@ -149,7 +149,7 @@ struct EqualIp {
       typename HyraxA::CommitmentPub com_pub;
       com_pub.xi = input.com_y;
       com_pub.tau = proof.com_z;
-      typename HyraxA::VerifyInput a_input(input.b, com_pub, input.get_gy,
+      typename HyraxA::VerifyInput a_input("eip", input.b, com_pub, input.get_gy,
                                            input.gz);
       rets[1] = HyraxA::Verify(proof.p2, seed, a_input);
     };
