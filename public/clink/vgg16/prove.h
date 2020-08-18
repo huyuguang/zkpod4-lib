@@ -113,21 +113,19 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   }
 #endif
 
-  {
-    Tick tick_conv(__FN__, "conv");
-    for (size_t i = 0; i < kConvCount; ++i) {
-      std::unique_ptr<AdaptProveItemMan> padapt_man_conv(new AdaptProveItemMan);
-      auto& adapt_man_conv = *padapt_man_conv;
-      std::unique_ptr<R1csProveItemMan> pr1cs_man_conv(new R1csProveItemMan);
-      auto& r1cs_man_conv = *pr1cs_man_conv;
+  for (size_t i = 0; i < kConvCount; ++i) {
+    Tick tick_conv(__FN__, "conv" + std::to_string(i));
+    std::unique_ptr<AdaptProveItemMan> padapt_man_conv(new AdaptProveItemMan);
+    auto& adapt_man_conv = *padapt_man_conv;
+    std::unique_ptr<R1csProveItemMan> pr1cs_man_conv(new R1csProveItemMan);
+    auto& r1cs_man_conv = *pr1cs_man_conv;
 
-      OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
-                             adapt_man_conv, r1cs_man_conv);
-      AdaptProve(seed, adapt_man_conv, proof.conv_adapt_proof[i]);
-      padapt_man_conv.reset();
+    OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
+                           adapt_man_conv, r1cs_man_conv);
+    AdaptProve(seed, adapt_man_conv, proof.conv_adapt_proof[i]);
+    padapt_man_conv.reset();
 
-      R1csProve(seed, r1cs_man_conv, proof.conv_r1cs_proof[i]);
-    }
+    R1csProve(seed, r1cs_man_conv, proof.conv_r1cs_proof[i]);
   }
 
 #if 1

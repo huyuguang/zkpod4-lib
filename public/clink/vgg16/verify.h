@@ -35,20 +35,18 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
     });
   }
 #endif
-  {
-    Tick tick_conv(__FN__, "conv");
-    for (size_t i = 0; i < kConvCount; ++i) {
-      std::unique_ptr<AdaptVerifyItemMan> padapt_man_conv(
-          new AdaptVerifyItemMan);
-      auto& adapt_man_conv = *padapt_man_conv;
-      std::unique_ptr<R1csVerifyItemMan> pr1cs_man_conv(new R1csVerifyItemMan);
-      auto& r1cs_man_conv = *pr1cs_man_conv;
 
-      OneConvVerifyPreprocess(seed, context, kConvLayers[i], proof.conv[i],
-                              adapt_man_conv, r1cs_man_conv);
-      CHECK(AdaptVerify(seed, adapt_man_conv, proof.conv_adapt_proof[i]), "");
-      CHECK(R1csVerify(seed, r1cs_man_conv, proof.conv_r1cs_proof[i]), "");
-    }
+  for (size_t i = 0; i < kConvCount; ++i) {
+    Tick tick_conv(__FN__, "conv" + std::to_string(i));
+    std::unique_ptr<AdaptVerifyItemMan> padapt_man_conv(new AdaptVerifyItemMan);
+    auto& adapt_man_conv = *padapt_man_conv;
+    std::unique_ptr<R1csVerifyItemMan> pr1cs_man_conv(new R1csVerifyItemMan);
+    auto& r1cs_man_conv = *pr1cs_man_conv;
+
+    OneConvVerifyPreprocess(seed, context, kConvLayers[i], proof.conv[i],
+                            adapt_man_conv, r1cs_man_conv);
+    CHECK(AdaptVerify(seed, adapt_man_conv, proof.conv_adapt_proof[i]), "");
+    CHECK(R1csVerify(seed, r1cs_man_conv, proof.conv_r1cs_proof[i]), "");
   }
 
 #if 1
