@@ -14,7 +14,7 @@ namespace pc {
 class Base : boost::noncopyable { 
  public:
   static int64_t GSize() {
-    return BIG_MODE ? 4096 * 1024 * 50 : 4096 * 1025;
+    return BIG_MODE ? (4096 * 1024 * 50) : (16384 * 1024 + 100);
   }
 
   Base(std::string const& file) {
