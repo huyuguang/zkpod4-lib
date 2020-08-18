@@ -388,7 +388,7 @@ struct Sec53b {
                     CommitmentPub&& com_pub, CommitmentSec&& com_sec) {
     Tick tick(__FN__, input.to_string());
 
-    assert(pc::Base::kGSize >= input.n());
+    assert(pc::Base::GSize() >= input.n());
     
     input.SortAndAlign(com_pub, com_sec);
 

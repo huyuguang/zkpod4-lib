@@ -312,6 +312,22 @@ int main(int argc, char** argv) {
       BIG_MODE = true;
     }
 
+    if (vmap.count("vgg16_publish")) {
+      BIG_MODE = true;
+    }
+    
+    if (vmap.count("vgg16_dbl_infer")) {
+      BIG_MODE = true;
+    }
+
+    if (vmap.count("vgg16_infer")) {
+      BIG_MODE = true;
+    }
+
+    if (vmap.count("vgg16_prove")) {
+      BIG_MODE = true;
+    }
+
     if (vmap.count("debug_check")) {
       DEBUG_CHECK = true;
     }
