@@ -71,7 +71,7 @@ class RationalConst {
           }
         }
         double_x = neg ? -double_x : double_x;
-        std::cout << "fixpoint overflow: "
+        std::cout << Tick::GetIndentString() << "fixpoint overflow: "
                   << "<" << D << "," << N << ">, double_x=" << double_x << "\n";
       }
     }

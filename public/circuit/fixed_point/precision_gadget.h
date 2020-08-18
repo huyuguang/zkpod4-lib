@@ -63,17 +63,10 @@ class PrecisionGadget : public libsnark::gadget<Fr> {
     assert(Fr(a.isNegative() ? 0 : 1) == sign);
     double da = RationalToDouble<D, N>(a);
     double db = RationalToDouble<D, M>(b);
-    assert(std::abs(da - db) < 0.001);
+    CHECK(std::abs(da - db) < 0.001, "");
+    auto val = ReducePrecision<D, N, M>(this->pb.lc_val(a_));
+    CHECK(val == this->pb.lc_val(ret_), "");
 #endif
-    if (DEBUG_CHECK) {
-      if (ReducePrecision<D, N, M>(this->pb.lc_val(a_)) !=
-          this->pb.lc_val(ret_)) {
-        std::string errmsg =
-            std::string(__FN__) + ":" + std::to_string(__LINE__) + " oops";
-        std::cout << errmsg << "\n";
-        throw std::runtime_error(errmsg);
-      }
-    }
   }
 
   libsnark::pb_linear_combination<Fr> ret() const { return ret_; }

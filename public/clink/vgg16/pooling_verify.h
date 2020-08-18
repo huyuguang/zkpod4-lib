@@ -7,12 +7,13 @@ inline bool PoolingInputVerifyPreprocess(h256_t seed,
                                          VerifyContext const& context,
                                          PoolingProof const& proof,
                                          AdaptVerifyItemMan& adapt_man) {
+  Tick tick(__FN__);
   auto const& input_pub = proof.input_pub;
 
   for (size_t l = 0; l < kPoolingLayers.size(); ++l) {
     auto layer = kPoolingLayers[l];
     if (context.image_com_pub().c[layer] != input_pub.cx[l]) {
-      std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+      std::cout << Tick::GetIndentString() << ": proof invalid\n";
       return false;
     }
   }
@@ -41,22 +42,22 @@ inline bool PoolingR1csVerifyPreprocess(h256_t seed,
   Tick tick(__FN__);
   (void)seed;
   if (proof.r1cs_pub.com_w[0] != proof.input_pub.cx[5]) {  // a
-    std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+    std::cout << Tick::GetIndentString() << ": proof invalid 1\n";
     return false;
   }
 
   if (proof.r1cs_pub.com_w[1] != proof.input_pub.cx[6]) {  // b
-    std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+    std::cout << Tick::GetIndentString() << ": proof invalid 2\n";
     return false;
   }
 
   if (proof.r1cs_pub.com_w[2] != proof.input_pub.cx[7]) {  // c
-    std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+    std::cout << Tick::GetIndentString() << ": proof invalid 3\n";
     return false;
   }
 
   if (proof.r1cs_pub.com_w[3] != proof.input_pub.cx[8]) {  // d
-    std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+    std::cout << Tick::GetIndentString() << ": proof invalid 4\n";
     return false;
   }
 
@@ -67,7 +68,7 @@ inline bool PoolingR1csVerifyPreprocess(h256_t seed,
   // see protoboard<FieldT>::val
   auto r1cs_ret_index = gadget.ret().index - 1;
   if (proof.r1cs_pub.r1cs_ret_index != r1cs_ret_index) {
-    std::cout << __FN__ << ": " << __LINE__ << ": proof invalid\n";
+    std::cout << Tick::GetIndentString() << ": proof invalid 5\n";
     return false;
   }
 

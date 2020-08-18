@@ -154,7 +154,7 @@ inline void OneConvR1csProvePreprocess(
   r1cs_sec.w.resize(s);
   auto n = K * C * D * D;
   for (auto& i : r1cs_sec.w) i.resize(n);
-  std::cout << "OneConvR1csProvePreprocess: " << r1cs_sec.r1cs_info->to_string()
+  std::cout << Tick::GetIndentString() << r1cs_sec.r1cs_info->to_string()
             << ", repeat times: " << n << "\n";
 
   // convert para from K*C*3*3 to KCDD*9

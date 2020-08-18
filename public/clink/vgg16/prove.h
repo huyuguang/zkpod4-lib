@@ -15,7 +15,7 @@ inline bool InferAndCommit(dbl::Image const& test_image,
   Tick tick(__FN__);
 
   if (fs::is_regular_file(working_path + "/sec/image_com_sec")) {
-    std::cout << "skip infer, use last images\n";
+    std::cout << Tick::GetIndentString()<<"skip infer, use last images\n";
     return true;
   }
 
@@ -54,6 +54,9 @@ struct Proof {
   DenseProof dense2;
   hyrax::A4::Proof adapt_proof;
   clink::ParallelR1cs<R1cs>::Proof r1cs_proof;
+
+  hyrax::A4::Proof conv_adapt_proof[kConvCount];
+  clink::ParallelR1cs<R1cs>::Proof conv_r1cs_proof[kConvCount];// TODO: serialize
 
   Proof(std::string const& file) {
     Tick tick(__FN__);
@@ -101,11 +104,30 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   std::vector<parallel::VoidTask> tasks;
 
   // conv
+#if 0
   for (size_t i = 0; i < kConvCount; ++i) {
     tasks.emplace_back([&context, &seed, &proof, i, &adapt_man, &r1cs_man]() {
       OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
                              adapt_man, r1cs_man);
     });
+  }
+#endif
+
+  {
+    Tick tick_conv(__FN__, "conv");
+    for (size_t i = 0; i < kConvCount; ++i) {
+      std::unique_ptr<AdaptProveItemMan> padapt_man_conv(new AdaptProveItemMan);
+      auto& adapt_man_conv = *padapt_man_conv;
+      std::unique_ptr<R1csProveItemMan> pr1cs_man_conv(new R1csProveItemMan);
+      auto& r1cs_man_conv = *pr1cs_man_conv;
+
+      OneConvProvePreprocess(seed, context, kConvLayers[i], proof.conv[i],
+                             adapt_man_conv, r1cs_man_conv);
+      AdaptProve(seed, adapt_man_conv, proof.conv_adapt_proof[i]);
+      padapt_man_conv.reset();
+
+      R1csProve(seed, r1cs_man_conv, proof.conv_r1cs_proof[i]);
+    }
   }
 
 #if 1

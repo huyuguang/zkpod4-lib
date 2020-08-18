@@ -72,7 +72,7 @@ inline void ReluR1csProvePreprocess(h256_t seed, ProveContext const& /*context*/
   r1cs_sec.w.resize(s);
   auto n = io_sec.input.size();
   for (auto& i : r1cs_sec.w) i.resize(n);
-  std::cout << "ReluR1csProvePreprocess: " << r1cs_sec.r1cs_info->to_string()
+  std::cout << Tick::GetIndentString() << r1cs_sec.r1cs_info->to_string()
             << ", repeat times: " << n << "\n";
 
   for (size_t j = 0; j < n; ++j) {

@@ -233,7 +233,7 @@ struct Sec51c {
 
     Fr yte = InnerProduct(input.yt, e);
     auto et = HadamardProduct(e, input.t);
-    assert(yte == InnerProduct(input.y, et));
+    DCHECK(yte == InnerProduct(input.y, et), "");
 
     // prove <yt, e> == <y, et>
     using eip = clink::EqualIp<hyrax::A3>;

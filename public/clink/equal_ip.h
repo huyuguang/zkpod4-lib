@@ -168,6 +168,7 @@ struct EqualIp {
 
 template <typename HyraxA>
 bool EqualIp<HyraxA>::Test(int64_t xn, int64_t yn) {
+  Tick tick(__FN__);
   auto seed = misc::RandH256();
   std::vector<Fr> x(xn);
   FrRand(x);
@@ -208,22 +209,18 @@ bool EqualIp<HyraxA>::Test(int64_t xn, int64_t yn) {
   yas::mem_ostream os;
   yas::binary_oarchive<yas::mem_ostream, YasBinF()> oa(os);
   oa.serialize(proof);
-  std::cout << "proof size: " << os.get_shared_buffer().size << "\n";
+  std::cout << Tick::GetIndentString() << "proof size: " << os.get_shared_buffer().size << "\n";
   // serialize from buffer
   yas::mem_istream is(os.get_intrusive_buffer());
   yas::binary_iarchive<yas::mem_istream, YasBinF()> ia(is);
   Proof proof2;
   ia.serialize(proof2);
-  if (proof != proof2) {
-    assert(false);
-    std::cout << "oops, serialize check failed\n";
-    return false;
-  }
+  CHECK(proof == proof2, "");
 #endif
 
   VerifyInput verify_input(a, com_x, get_gx, b, com_y, get_gy);
   bool success = Verify(seed, proof, verify_input);
-  std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";
+  std::cout << Tick::GetIndentString() << success << "\n\n\n\n\n\n";
   return success;
 }
 }  // namespace clink

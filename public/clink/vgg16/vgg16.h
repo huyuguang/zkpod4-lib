@@ -92,8 +92,12 @@ inline bool TestProve(std::string const& test_image_path,
 
   Proof proof;
   if (!Prove(seed, test_image, working_path, proof)) return false;
+
   YasSaveBin(working_path + "/proof", proof);
-  if (!TestSerialize(working_path)) return false;
+  std::cout << Tick::GetIndentString() << "proof size: " << YasGetBinLen(proof)
+            << "\n";
+  //if (!TestSerialize(working_path)) return false;
+
   return Verify(seed, working_path + "/pub", test_image, proof);
 }
 //

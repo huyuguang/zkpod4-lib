@@ -13,8 +13,8 @@ namespace clink::vgg16 {
 inline void InferConv(Para::ConvLayer const& layer, Image const& input_image,
                       Image& output_image) {
   Tick tick(__FN__, std::to_string(layer.order));
-  //input_image.dump<8,24>();
-  //layer.dump();
+  // input_image.dump<8,24>();
+  // layer.dump();
   namespace fp = circuit::fp;
   size_t const C = layer.C();
   size_t const D = layer.D;
@@ -99,9 +99,10 @@ inline void InferConv(Para::ConvLayer const& layer, Image const& input_image,
     }
   }
 #endif
-  std::cout << fp::RationalToDouble<8, 48>(output_image.data.front()) << " "
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 48>(output_image.data.front()) << " "
             << fp::RationalToDouble<8, 48>(output_image.data.back()) << "\n";
-  
+
   return;
 }
 
@@ -146,7 +147,8 @@ inline void InferRelu(Image const& input_image, Image& output_image) {
     }
   }
 #endif
-  std::cout << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
             << fp::RationalToDouble<8, 24>(output_image.data.back()) << "\n";
   return;
 }
@@ -194,7 +196,8 @@ inline void InferMaxPooling(Image const& input_image, Image& output_image) {
     }
   }
 #endif
-  std::cout << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
             << fp::RationalToDouble<8, 24>(output_image.data.back()) << "\n";
   return;
 }
@@ -217,7 +220,8 @@ inline void InferFlatten(Image const& input_image, Image& output_image) {
       }
     }
   }
-  std::cout << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 24>(output_image.data.front()) << " "
             << fp::RationalToDouble<8, 24>(output_image.data.back()) << "\n";
 }
 
@@ -242,7 +246,8 @@ inline void InferDense(Para::DenseLayer const& layer, Image const& input_image,
         input.begin(), input.end(), layer.weight[i].begin(), FrZero());
   };
   parallel::For(output_data.size(), pf);
-  std::cout << fp::RationalToDouble<8, 48>(output_image.data.front()) << " "
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 48>(output_image.data.front()) << " "
             << fp::RationalToDouble<8, 48>(output_image.data.back()) << "\n";
 }
 
@@ -256,7 +261,7 @@ inline void Infer(Para const& para, dbl::Image const& dbl_image,
   }
 
   InferConv(para.conv_layer(0), *images[0], *images[1]);
-  
+
   InferRelu(*images[1], *images[2]);
 
   InferConv(para.conv_layer(1), *images[2], *images[3]);
@@ -329,10 +334,10 @@ inline void Infer(Para const& para, dbl::Image const& dbl_image,
 
   InferDense(para.dense_layer(2), *images[36], *images[37]);
 
-  //images[37]->dump<8, 48>();
-  std::cout << fp::RationalToDouble<8, 48>(images[37]->data.front()) << " "
+  // images[37]->dump<8, 48>();
+  std::cout << Tick::GetIndentString()
+            << fp::RationalToDouble<8, 48>(images[37]->data.front()) << " "
             << fp::RationalToDouble<8, 48>(images[37]->data.back()) << "\n";
-
 }
 
 };  // namespace clink::vgg16

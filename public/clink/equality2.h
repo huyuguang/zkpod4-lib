@@ -118,6 +118,7 @@ struct Equality2 {
   }
 
   static bool Test() {
+    Tick tick(__FN__);
     auto seed = misc::RandH256();
     std::vector<std::vector<Fr>> x(10);
     for (size_t i = 0; i < x.size(); ++i) {
@@ -160,7 +161,7 @@ struct Equality2 {
       // n = std::max<size_t>(n, v_size[i]);
     }
     bool success = Verify(proof, seed, v_size, cv, get_gv, cu, get_gu);
-    std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";
+    std::cout << Tick::GetIndentString() << success << "\n\n\n\n\n\n";
     return success;
   }
 };

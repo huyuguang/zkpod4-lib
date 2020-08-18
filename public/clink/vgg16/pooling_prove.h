@@ -100,7 +100,7 @@ inline void PoolingR1csProvePreprocess(
   r1cs_sec.w.resize(s);
   auto n = input_sec.a.size();
   for (auto& i : r1cs_sec.w) i.resize(n);
-  std::cout << "PoolingR1csProvePreprocess: " << r1cs_sec.r1cs_info->to_string()
+  std::cout << Tick::GetIndentString() << r1cs_sec.r1cs_info->to_string()
             << ", repeat times: " << n << "\n";
 
   if (DEBUG_CHECK) {
@@ -124,7 +124,7 @@ inline void PoolingR1csProvePreprocess(
   r1cs_pub.com_w.resize(s);
   r1cs_sec.com_w_r.resize(s);
 
-  std::cout << "compute pooling com(witness)\n";
+  std::cout << Tick::GetIndentString()<< "compute pooling com(witness)\n";
   r1cs_sec.com_w_r[0] = input_sec.r_a;
   r1cs_pub.com_w[0] = input_pub.cx[5];
   r1cs_sec.com_w_r[1] = input_sec.r_b;
