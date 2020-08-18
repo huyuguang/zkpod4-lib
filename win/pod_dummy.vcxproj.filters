@@ -505,5 +505,8 @@
     <ClInclude Include="..\public\misc\debug.h">
       <Filter>public\misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\clink\batch_r1cs.h">
+      <Filter>public\clink</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

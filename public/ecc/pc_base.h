@@ -6,20 +6,24 @@
 #include "log/tick.h"
 #include "public.h"
 
+extern bool BIG_MODE;
+
 namespace pc {
 
 // pedersen commitment base H&G
-class Base : boost::noncopyable {
+class Base : boost::noncopyable { 
  public:
-  static inline int64_t const kGSize = 4096 * 1024 * 50;
+  static int64_t GSize() {
+    return BIG_MODE ? 4096 * 1024 * 50 : 4096 * 1025;
+  }
 
   Base(std::string const& file) {
-    g_ = new G1[kGSize];
+    g_ = new G1[GSize()];
     LoadInternal(file);
   }
 
   Base() {
-    g_ = new G1[kGSize];
+    g_ = new G1[GSize()];
     Create();
   }
   
@@ -41,8 +45,8 @@ class Base : boost::noncopyable {
 
  private:
   struct Header {
-    uint64_t header_size;
-    uint64_t g_size;
+    int64_t header_size;
+    int64_t g_size;
   };
 
   void Create() {
@@ -53,7 +57,7 @@ class Base : boost::noncopyable {
     GenerateG1(0xfffffffffffffffeULL, &u_);
 
     auto parallel_f = [this](int64_t i) { GenerateG1(i, &g_[i]); };
-    parallel::For(kGSize, parallel_f);
+    parallel::For(GSize(), parallel_f);
   }
 
   void SaveInternal(std::string const& file) {
@@ -65,12 +69,12 @@ class Base : boost::noncopyable {
 
     Header header;
     header.header_size = sizeof(Header);
-    header.g_size = kGSize;
+    header.g_size = GSize();
 
     CHECK(WriteHeader(f, header), "");
     CHECK(WriteG1(f, h_), "");
     CHECK(WriteG1(f, u_), "");
-    for (auto i = 0; i < kGSize; ++i) {
+    for (auto i = 0; i < GSize(); ++i) {
       auto& g = g_[i];
       CHECK(WriteG1(f, g), "");
     }
@@ -86,13 +90,13 @@ class Base : boost::noncopyable {
     Header header;
     CHECK(ReadHeader(f, header), file);
 
-    CHECK(header.g_size == kGSize, file);
+    CHECK(header.g_size == GSize(), file);
 
     CHECK(ReadG1(f, h_), file);
 
     CHECK(ReadG1(f, u_), file);
 
-    for (auto i = 0; i < kGSize; ++i) {
+    for (auto i = 0; i < GSize(); ++i) {
       auto& g = g_[i];
       CHECK(ReadG1(f, g), file);
     }
@@ -209,7 +213,7 @@ inline G1 const& PcG(int64_t i) {
   if (i == -1) {
     return base.u();
   } else {
-    CHECK(i < Base::kGSize, std::to_string(i));
+    CHECK(i < Base::GSize(), std::to_string(i));
     return base.g()[i];
   }
 }
@@ -230,7 +234,7 @@ inline G1 const& PcHG(int64_t i) {
 }
 
 inline GetRefG1 const kGetRefG1 = [](int64_t i) -> G1 const& {
-  CHECK(i < Base::kGSize, std::to_string(i));
+  CHECK(i < Base::GSize(), std::to_string(i));
   return pc::PcG()[i];
 };
 
@@ -322,7 +326,7 @@ inline G1 ComputeSigmaG(size_t offset, int64_t n) {
 }
 
 inline bool TestPcCommitment(int64_t n) {
-  if (n > Base::kGSize) return false;
+  if (n > Base::GSize()) return false;
   std::vector<Fr> x(n);
   FrRand(x);
   Fr r = FrRand();

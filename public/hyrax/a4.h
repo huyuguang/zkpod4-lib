@@ -41,7 +41,7 @@ struct A4 {
     int64_t m() const { return com_pub.m(); }
     int64_t n() const { return max_n; }
     std::string to_string() const {
-      return tag + ": " + std::to_string(m()) + "," + std::to_string(n());
+      return tag + ": " + std::to_string(m()) + "*" + std::to_string(n());
     }
 
     void SortAndAlign() {
@@ -81,7 +81,7 @@ struct A4 {
     int64_t m() const { return (int64_t)x.size(); }
     int64_t n() const { return (int64_t)max_n; }
     std::string to_string() const {
-      return tag + ": " + std::to_string(m()) + "," + std::to_string(n());
+      return tag + ": " + std::to_string(m()) + "*" + std::to_string(n());
     }
     ProveInput(std::string const& tag, std::vector<std::vector<Fr>>&& x,
                std::vector<std::vector<Fr>>&& a, Fr const& z,

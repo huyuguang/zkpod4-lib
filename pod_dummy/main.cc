@@ -17,22 +17,14 @@
 #include "misc/misc.h"
 #include "public.h"
 
-#ifdef _DEBUG
-bool DEBUG_CHECK = true;
-#else
 bool DEBUG_CHECK = false;
-#endif
+bool BIG_MODE = false;
 
 bool InitAll(std::string const& data_dir) {
   InitEcc();
 
-  // auto ecc_pub_file = data_dir + "/" + "ecc_pub.bin";
-  // if (!OpenOrCreateEccPub(ecc_pub_file)) {
-  //  std::cerr << "Open or create ecc pub file " << ecc_pub_file << "
-  //  failed\n"; return false;
-  //}
-
-  auto ecc_pds_file = data_dir + "/" + "pds_pub.bin";
+  std::string const kFileName = BIG_MODE ? "pds_pub_big.bin" : "pds_pub.bin";
+  auto ecc_pds_file = data_dir + "/" + kFileName;
   if (!pc::OpenOrCreatePdsPub(ecc_pds_file)) {
     std::cerr << "Open or create pds pub file " << ecc_pds_file << " failed\n";
     return false;
@@ -193,7 +185,6 @@ int main(int argc, char** argv) {
   Param2Str vgg16_dbl_infer;
   Param2Str vgg16_prove;
   bool vgg16_test = false;
-  bool debug_check = false;
 
   try {
     po::options_description options("command line options");
@@ -248,7 +239,8 @@ int main(int argc, char** argv) {
         "\"para_path test_image_path\"")("vgg16_prove",
                                          po::value<Param2Str>(&vgg16_prove),
                                          "test_image_path working_path")(
-        "vgg16_test", "")("debug_check", po::value<bool>(&debug_check));
+        "vgg16_test", "")("debug_check", "")(
+          "big_mode", "");
 
     boost::program_options::variables_map vmap;
 
@@ -317,10 +309,15 @@ int main(int argc, char** argv) {
 
     if (vmap.count("vgg16_test")) {
       vgg16_test = true;
+      BIG_MODE = true;
     }
 
     if (vmap.count("debug_check")) {
-      DEBUG_CHECK = debug_check;
+      DEBUG_CHECK = true;
+    }
+
+    if (vmap.count("big_mode")) {
+      BIG_MODE = true;
     }
   } catch (std::exception& e) {
     std::cout << "Unknown parameters.\n"

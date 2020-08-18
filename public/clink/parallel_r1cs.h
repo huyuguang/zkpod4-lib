@@ -423,6 +423,9 @@ struct ParallelR1cs {
       Prove(proof, seed, std::move(prove_input));
     }
 
+  std::cout << Tick::GetIndentString()
+              << "proof size: " << YasGetBinLen(proof) << "\n";
+
     std::vector<std::vector<Fr>> public_w;
     VerifyInput verify_input(n, r1cs_info, "test", com_w, public_w,
                              pc::kGetRefG1);

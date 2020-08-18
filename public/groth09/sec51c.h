@@ -50,7 +50,7 @@ struct Sec51c {
       assert(yt == HadamardProduct(y, t));
       assert(z == InnerProduct(x, yt));
       get_gyt = [this](int64_t i) -> G1 const& {
-        size_t offset = pc::GetPcBase().kGSize - this->n();
+        size_t offset = pc::Base::GSize() - this->n();
         return pc::PcG()[offset + i];
       };
     }
@@ -127,7 +127,7 @@ struct Sec51c {
                 GetRefG1 const& get_gx, GetRefG1 const& get_gy, G1 const& gz)
         : t(t), com_pub(com_pub), get_gx(get_gx), get_gy(get_gy), gz(gz) {
       get_gyt = [this](int64_t i) -> G1 const& {
-        size_t offset = pc::GetPcBase().kGSize - this->n();
+        size_t offset = pc::Base::GSize() - this->n();
         return pc::PcG()[offset + i];
       };
     }
