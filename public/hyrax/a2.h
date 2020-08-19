@@ -13,8 +13,9 @@
 namespace hyrax {
 struct A2 {
   struct ProveInput {
-    ProveInput(std::string const& tag, std::vector<Fr> const& x, std::vector<Fr> const& a, Fr const& y,
-               GetRefG1 const& get_gx, G1 const& gy)
+    ProveInput(std::string const& tag, std::vector<Fr> const& x,
+               std::vector<Fr> const& a, Fr const& y, GetRefG1 const& get_gx,
+               G1 const& gy)
         : tag(tag), x(x), a(a), y(y), get_gx(get_gx), gy(gy) {
       assert(x.size() == a.size() && !a.empty());
       assert(y == InnerProduct(x, a));
@@ -96,8 +97,9 @@ struct A2 {
   };
 
   struct VerifyInput {
-    VerifyInput(std::string const& tag, std::vector<Fr> const& a, CommitmentPub const& com_pub,
-                GetRefG1 const& get_gx, G1 const& gy)
+    VerifyInput(std::string const& tag, std::vector<Fr> const& a,
+                CommitmentPub const& com_pub, GetRefG1 const& get_gx,
+                G1 const& gy)
         : tag(tag), a(a), com_pub(com_pub), get_gx(get_gx), gy(gy) {}
     std::string tag;
     std::vector<Fr> const& a;  // a.size = n

@@ -50,7 +50,8 @@ inline void ReluInOutProvePreprocess(h256_t seed, ProveContext const& context,
 }
 
 // prove y=<x,para>
-inline void ReluR1csProvePreprocess(h256_t seed, ProveContext const& /*context*/,
+inline void ReluR1csProvePreprocess(h256_t seed,
+                                    ProveContext const& /*context*/,
                                     ReluInOutSec const& io_sec,
                                     ReluProof& proof,
                                     std::shared_ptr<ReluR1csSec> pr1cs_sec,

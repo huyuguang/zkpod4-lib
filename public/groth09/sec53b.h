@@ -48,9 +48,7 @@ struct Sec53b {
           gz(gz) {
       Check();
     }
-    void SortAndAlign() {
-      PermuteAndAlign(GetSortOrder(mn), com_pub);
-    }
+    void SortAndAlign() { PermuteAndAlign(GetSortOrder(mn), com_pub); }
     int64_t m() const { return com_pub.m(); }
     int64_t n() const { return t.size(); }
     std::string to_string() const {
@@ -90,7 +88,7 @@ struct Sec53b {
     }
 
     ProveInput(std::vector<std::vector<Fr>>&& x,
-               std::vector<std::vector<Fr>>&& y, std::vector<Fr>const & t,
+               std::vector<std::vector<Fr>>&& y, std::vector<Fr> const& t,
                std::vector<std::vector<Fr>>&& yt, Fr const& z,
                GetRefG1 const& get_gx, GetRefG1 const& get_gy, G1 const& gz)
         : x(std::move(x)),
@@ -144,7 +142,7 @@ struct Sec53b {
     }
 
    private:
-     void Check() {
+    void Check() {
       CHECK(!x.empty(), "");
 
       CHECK(x.size() == y.size() && x.size() == yt.size(), "");
@@ -160,12 +158,12 @@ struct Sec53b {
 #ifdef _DEBUG
       Fr check_z = FrZero();
       for (int64_t i = 0; i < m(); ++i) {
-        CHECK(yt[i] == HadamardProduct(y[i], t),"");
+        CHECK(yt[i] == HadamardProduct(y[i], t), "");
         check_z += InnerProduct(x[i], yt[i]);
       }
-      CHECK(z == check_z,"");
+      CHECK(z == check_z, "");
 #endif
-     }
+    }
   };
 
   struct CommitmentExtPub {
@@ -221,17 +219,17 @@ struct Sec53b {
                          CommitmentSec const& com_sec) {
     Tick tick(__FN__, input.to_string());
     auto const m = input.m();
-    //auto const n = input.n();
+    // auto const n = input.n();
 
     com_pub->a.resize(m);
     com_pub->b.resize(m);
-    
+
     auto parallel_f = [&input, &com_pub, &com_sec](int64_t i) {
-      std::array<parallel::VoidTask, 2> tasks;
+      std::array<parallel::VoidTask, 2> tasks{nullptr};
       tasks[0] = [&com_pub, &com_sec, &input, i]() {
         com_pub->a[i] = pc::ComputeCom(input.get_gx, input.x[i], com_sec.r[i]);
       };
-      tasks[0] = [&com_pub, &com_sec, &input, i]() {
+      tasks[1] = [&com_pub, &com_sec, &input, i]() {
         com_pub->b[i] = pc::ComputeCom(input.get_gy, input.y[i], com_sec.s[i]);
       };
       parallel::Invoke(tasks);
@@ -389,7 +387,7 @@ struct Sec53b {
     Tick tick(__FN__, input.to_string());
 
     assert(pc::Base::GSize() >= input.n());
-    
+
     input.SortAndAlign(com_pub, com_sec);
 
     while (input.m() > 1) {
@@ -398,10 +396,9 @@ struct Sec53b {
     return ProveFinal(proof, seed, input, com_pub, com_sec);
   }
 
-  static bool Verify(Proof const& proof, h256_t seed,
-                     VerifyInput&& input) {
+  static bool Verify(Proof const& proof, h256_t seed, VerifyInput&& input) {
     Tick tick(__FN__, input.to_string());
-    
+
     input.SortAndAlign();
 
     if (!proof.CheckFormat(input.m())) {
@@ -447,7 +444,7 @@ struct Sec53b {
     typename Sec51::VerifyInput verifier_input_51(
         input.t, com_pub_51, input.get_gx, input.get_gy, input.gz);
     return Sec51::Verify(proof.proof_51, seed, verifier_input_51);
-  }  
+  }
 
  private:
   static std::vector<size_t> GetSortOrder(std::vector<size_t> const& mn) {
@@ -456,9 +453,8 @@ struct Sec53b {
       order[i] = i;
     }
 
-    std::stable_sort(order.begin(), order.end(), [&mn](size_t a, size_t b) {
-      return mn[a] > mn[b];
-    });
+    std::stable_sort(order.begin(), order.end(),
+                     [&mn](size_t a, size_t b) { return mn[a] > mn[b]; });
 
     return order;
   }
@@ -581,7 +577,7 @@ bool Sec53b<Sec51>::Test(int64_t m, int64_t n) {
   CommitmentPub com_pub;
   CommitmentSec com_sec;
   ComputeCom(prove_input, &com_pub, &com_sec);
-  
+
   Proof proof;
   auto copy_com_pub = com_pub;
   Prove(proof, seed, std::move(prove_input), std::move(com_pub),
@@ -605,9 +601,9 @@ bool Sec53b<Sec51>::Test(int64_t m, int64_t n) {
   }
 
 #endif
-  
-  VerifyInput verify_input(mn, t, std::move(copy_com_pub), get_gx,
-                           get_gy, pc::PcU());
+
+  VerifyInput verify_input(mn, t, std::move(copy_com_pub), get_gx, get_gy,
+                           pc::PcU());
   bool success = Verify(proof, seed, std::move(verify_input));
   std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";
   return success;

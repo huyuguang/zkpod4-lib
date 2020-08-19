@@ -22,7 +22,7 @@ class Relu2Gadget : public libsnark::gadget<Fr> {
     a_.allocate(this->pb, FMT(this->annotation_prefix, " a"));
     ret_.allocate(pb, FMT(this->annotation_prefix, " ret"));
     precision_gadget_.reset(new PrecisionGadget<D, N, M>(
-        this->pb, a_, FMT(this->annotation_prefix, " precision_gadget")));    
+        this->pb, a_, FMT(this->annotation_prefix, " precision_gadget")));
     generate_r1cs_constraints();
   }
 
@@ -47,11 +47,11 @@ class Relu2Gadget : public libsnark::gadget<Fr> {
   void generate_r1cs_witness() {
     precision_gadget_->generate_r1cs_witness();
 
-    //auto a = this->pb.lc_val(a_);
+    // auto a = this->pb.lc_val(a_);
     auto b = this->pb.lc_val(precision_gadget_->ret());
     auto sign = this->pb.lc_val(precision_gadget_->sign());
     this->pb.val(ret_) = sign == Fr(0) ? Fr(0) : b;
-  }  
+  }
 
  public:
   static bool Test(double const& dx) {

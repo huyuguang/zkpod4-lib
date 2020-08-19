@@ -136,7 +136,8 @@ bool MatchPack<Policy>::Test(int64_t n, std::string const& k) {
     return false;
   }
   if (n >= pc::Base::GSize() / 2) {
-    std::cout << "invalid parameter: n must < " << pc::Base::GSize() / 2 << "\n";
+    std::cout << "invalid parameter: n must < " << pc::Base::GSize() / 2
+              << "\n";
     return false;
   }
 

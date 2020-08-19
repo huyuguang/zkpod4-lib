@@ -478,7 +478,8 @@ struct Mnist {
     }
 
     hyrax::A2::CommitmentPub com_pub_hy(proof.com, proof.com_z);
-    hyrax::A2::VerifyInput input_hy("mnist", x, com_pub_hy, pc::kGetRefG1, pc::PcG(0));
+    hyrax::A2::VerifyInput input_hy("mnist", x, com_pub_hy, pc::kGetRefG1,
+                                    pc::PcG(0));
     if (!hyrax::A2::Verify(proof.proof_hy, seed, input_hy)) {
       assert(false);
       return false;

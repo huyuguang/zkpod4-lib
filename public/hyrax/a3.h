@@ -167,8 +167,7 @@ struct A3 {
     Tick tick(__FN__);
     std::array<parallel::VoidTask, 2> tasks;
     tasks[0] = [&com_pub, &input, &com_sec]() {
-      com_pub.xi =
-          pc::ComputeCom(input.get_gx, input.x, com_sec.r_xi);
+      com_pub.xi = pc::ComputeCom(input.get_gx, input.x, com_sec.r_xi);
     };
     tasks[1] = [&com_pub, &input, &com_sec]() {
       com_pub.tau = pc::ComputeCom(input.gy, input.y, com_sec.r_tau);
@@ -189,7 +188,7 @@ struct A3 {
     int64_t round = (int64_t)misc::Log2UB(n);
     auto gx = pc::CopyG(input.get_gx, n);
     gx.resize(misc::Pow2UB(n), G1Zero());
-    //std::fill(gx.begin() + n, gx.end(), G1Zero());
+    // std::fill(gx.begin() + n, gx.end(), G1Zero());
     auto const& h = pc::PcH();
     proof.com_ext_pub.gamma_neg_1.resize(round);
     proof.com_ext_pub.gamma_pos_1.resize(round);

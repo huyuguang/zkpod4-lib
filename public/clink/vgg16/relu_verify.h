@@ -4,10 +4,9 @@
 
 namespace clink::vgg16 {
 
-inline bool ReluInOutVerifyPreprocess(h256_t seed,
-                                        VerifyContext const& context,
-                                        ReluProof const& proof,
-                                        AdaptVerifyItemMan& item_man) {
+inline bool ReluInOutVerifyPreprocess(h256_t seed, VerifyContext const& context,
+                                      ReluProof const& proof,
+                                      AdaptVerifyItemMan& item_man) {
   auto const& io_pub = proof.io_pub;
 
   if (io_pub.cx.size() != kReluLayers.size() * 2 + 2) {
@@ -75,9 +74,9 @@ inline bool ReluInOutVerifyPreprocess(h256_t seed,
 }
 
 inline bool ReluR1csVerifyPreprocess(h256_t seed,
-                                       VerifyContext const& /*context*/,
-                                       ReluProof const& proof,
-                                       R1csVerifyItemMan& r1cs_man) {
+                                     VerifyContext const& /*context*/,
+                                     ReluProof const& proof,
+                                     R1csVerifyItemMan& r1cs_man) {
   Tick tick(__FN__);
   namespace fp = circuit::fp;
   (void)seed;
@@ -100,18 +99,18 @@ inline bool ReluR1csVerifyPreprocess(h256_t seed,
   R1csVerifyItem item;
   item.public_w.reset(new std::vector<std::vector<Fr>>);
   item.r1cs_info.reset(new R1csInfo(pb));
-  item.r1cs_input.reset(new R1cs::VerifyInput(
-      n, *item.r1cs_info, ReluR1csTag(), proof.r1cs_pub.com_w, *item.public_w,
-      pc::kGetRefG1));
+  item.r1cs_input.reset(new R1cs::VerifyInput(n, *item.r1cs_info, ReluR1csTag(),
+                                              proof.r1cs_pub.com_w,
+                                              *item.public_w, pc::kGetRefG1));
 
   r1cs_man.emplace(std::move(item));
   return true;
 }
 
 inline bool ReluVerifyPreprocess(h256_t seed, VerifyContext const& context,
-                                   ReluProof const& proof,
-                                   AdaptVerifyItemMan& item_man,
-                                   R1csVerifyItemMan& r1cs_man) {
+                                 ReluProof const& proof,
+                                 AdaptVerifyItemMan& item_man,
+                                 R1csVerifyItemMan& r1cs_man) {
   Tick tick(__FN__);
 
   std::array<parallel::VoidTask, 2> tasks;

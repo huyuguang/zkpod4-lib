@@ -124,7 +124,7 @@ inline void PoolingR1csProvePreprocess(
   r1cs_pub.com_w.resize(s);
   r1cs_sec.com_w_r.resize(s);
 
-  std::cout << Tick::GetIndentString()<< "compute pooling com(witness)\n";
+  std::cout << Tick::GetIndentString() << "compute pooling com(witness)\n";
   r1cs_sec.com_w_r[0] = input_sec.r_a;
   r1cs_pub.com_w[0] = input_pub.cx[5];
   r1cs_sec.com_w_r[1] = input_sec.r_b;
@@ -203,9 +203,9 @@ inline void PoolingOutputProvePreprocess(h256_t seed,
     parallel::For<int64_t>(xq.size(), parallel_f);
 
     Fr sum_xq = std::accumulate(xq.begin() + 1, xq.end(), FrZero());
-    CHECK (sum_xq == xq[0],"");
+    CHECK(sum_xq == xq[0], "");
     G1 sum_com_xq = std::accumulate(com_xq.begin() + 1, com_xq.end(), G1Zero());
-    CHECK(sum_com_xq == com_xq[0],"");
+    CHECK(sum_com_xq == com_xq[0], "");
   }
 
   // auto parallel_f2 = [&seed, &x, &q, &xq, &com_xq, &com_x_r, &com_xq_r,

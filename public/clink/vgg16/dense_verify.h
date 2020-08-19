@@ -26,7 +26,8 @@ static bool VerifyDense(DenseProof const& proof, h256_t seed,
   }
 
   HyraxA::CommitmentPub com_pub_hy(proof.com_y, proof.com_z);
-  HyraxA::VerifyInput input_hy("dense", x, com_pub_hy, pc::kGetRefG1, pc::PcG(0));
+  HyraxA::VerifyInput input_hy("dense", x, com_pub_hy, pc::kGetRefG1,
+                               pc::PcG(0));
   CHECK(HyraxA::Verify(proof.proof_hy, seed, input_hy), "");
 
   // std::cout << "verify, seed: " << misc::HexToStr(seed) << "\n";

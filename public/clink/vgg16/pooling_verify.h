@@ -130,17 +130,17 @@ inline bool PoolingVerifyPreprocess(h256_t seed, VerifyContext const& context,
   Tick tick(__FN__);
 
   std::array<parallel::VoidTask, 3> tasks;
-  
+
   tasks[0] = [&seed, &context, &proof, &adapt_man]() {
-    CHECK(PoolingInputVerifyPreprocess(seed, context, proof, adapt_man),"");
+    CHECK(PoolingInputVerifyPreprocess(seed, context, proof, adapt_man), "");
   };
 
   tasks[1] = [&seed, &context, &proof, &r1cs_man]() {
-    CHECK(PoolingR1csVerifyPreprocess(seed, context, proof, r1cs_man),"");
+    CHECK(PoolingR1csVerifyPreprocess(seed, context, proof, r1cs_man), "");
   };
 
   tasks[2] = [&seed, &context, &proof, &adapt_man]() {
-    CHECK(PoolingOutputVerifyPreprocess(seed, context, proof, adapt_man),"");
+    CHECK(PoolingOutputVerifyPreprocess(seed, context, proof, adapt_man), "");
   };
 
   parallel::Invoke(tasks);

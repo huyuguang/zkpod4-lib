@@ -275,7 +275,8 @@ inline bool Test(int64_t n) {
   yas::mem_ostream os;
   yas::binary_oarchive<yas::mem_ostream, YasBinF()> oa(os);
   oa.serialize(proof);
-  std::cout << Tick::GetIndentString() << "proof size: " << os.get_shared_buffer().size << "\n";
+  std::cout << Tick::GetIndentString()
+            << "proof size: " << os.get_shared_buffer().size << "\n";
   // serialize from buffer
   yas::mem_istream is(os.get_intrusive_buffer());
   yas::binary_iarchive<yas::mem_istream, YasBinF()> ia(is);

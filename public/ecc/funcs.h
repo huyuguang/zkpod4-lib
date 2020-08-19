@@ -400,7 +400,7 @@ inline void HadamardProduct(std::vector<Fr>& c, std::vector<Fr> const& a,
 }
 
 inline std::vector<Fr> HadamardProduct(std::vector<Fr> const& a,
-                                       std::vector<Fr> const& b) {  
+                                       std::vector<Fr> const& b) {
   std::vector<Fr> c;
   HadamardProduct(c, a, b);
   return c;

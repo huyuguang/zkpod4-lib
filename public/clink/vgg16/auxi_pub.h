@@ -61,8 +61,8 @@ class AuxiPub {
   template <typename Ar>
   void serialize(Ar& ar) const {
     ar& YAS_OBJECT_NVP(
-        "vgg16.auxi", ("c1", *para_u_conv1_),
-        ("c3", *para_u_conv3_), ("c6", *para_u_conv6_), ("c9", *para_u_conv9_),
+        "vgg16.auxi", ("c1", *para_u_conv1_), ("c3", *para_u_conv3_),
+        ("c6", *para_u_conv6_), ("c9", *para_u_conv9_),
         ("c12", *para_u_conv12_), ("d0", *data_u_conv0_),
         ("d1", *data_u_conv1_), ("d2", *data_u_conv2_), ("d3", *data_u_conv3_),
         ("d4", *data_u_conv4_), ("d6", *data_u_conv6_), ("d7", *data_u_conv7_),
@@ -72,8 +72,8 @@ class AuxiPub {
   template <typename Ar>
   void serialize(Ar& ar) {
     ar& YAS_OBJECT_NVP(
-        "vgg16.auxi", ("c1", *para_u_conv1_),
-        ("c3", *para_u_conv3_), ("c6", *para_u_conv6_), ("c9", *para_u_conv9_),
+        "vgg16.auxi", ("c1", *para_u_conv1_), ("c3", *para_u_conv3_),
+        ("c6", *para_u_conv6_), ("c9", *para_u_conv9_),
         ("c12", *para_u_conv12_), ("d0", *data_u_conv0_),
         ("d1", *data_u_conv1_), ("d2", *data_u_conv2_), ("d3", *data_u_conv3_),
         ("d4", *data_u_conv4_), ("d6", *data_u_conv6_), ("d7", *data_u_conv7_),
@@ -101,7 +101,6 @@ class AuxiPub {
   }
 
  private:
-
   // $u_i=\prod_{j=0}^{DD-1}g_{iDD+j},i\in[0,KC-1]$
   std::unique_ptr<std::array<G1, 64 * 64>> para_u_conv1_;
   std::unique_ptr<std::array<G1, 128 * 128>> para_u_conv3_;
@@ -126,7 +125,7 @@ class AuxiPub {
   std::array<size_t, kConvCount> data_u_conv_size_;
 
  private:
-  void InitPtr() { 
+  void InitPtr() {
     para_u_conv1_.reset(new std::array<G1, 64 * 64>);
     para_u_conv3_.reset(new std::array<G1, 128 * 128>);
     para_u_conv6_.reset(new std::array<G1, 256 * 256>);

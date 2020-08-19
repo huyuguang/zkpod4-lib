@@ -135,8 +135,8 @@ bool YasSaveBin(std::string const &file, T const &t) {
 
   if (DEBUG_CHECK) {
     T check;
-    CHECK(YasLoadBin(file, check),"");
-    CHECK(t == check,"");
+    CHECK(YasLoadBin(file, check), "");
+    CHECK(t == check, "");
   }
 
   return true;
@@ -157,8 +157,8 @@ bool YasSaveBin(yas::shared_buffer &data, T const &t) {
 
   if (DEBUG_CHECK) {
     T check;
-    CHECK(YasLoadBin(data.data.get(), data.size, check),"");
-    CHECK(t == check,"");
+    CHECK(YasLoadBin(data.data.get(), data.size, check), "");
+    CHECK(t == check, "");
   }
 
   return true;

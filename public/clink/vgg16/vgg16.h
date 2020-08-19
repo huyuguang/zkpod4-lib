@@ -12,12 +12,12 @@
 namespace clink::vgg16 {
 
 inline bool TestPublish(std::string const& para_path,
-                    std::string const& working_path) {
+                        std::string const& working_path) {
   return Publish(para_path, working_path);
 }
 
 inline bool TestInfer(std::string const& test_image_path,
-               std::string const& working_path) {
+                      std::string const& working_path) {
   dbl::Image test_image(kImageInfos[0]);
   if (!dbl::LoadTestImage(test_image_path, test_image)) {
     return false;
@@ -31,7 +31,7 @@ inline bool TestDense(std::string const& working_path) {
   h256_t seed = misc::RandH256();
   ProveContext prove_context(working_path);
   VerifyContext verify_context(working_path + "/pub");
-  
+
   DenseProof proof0;
   DenseProve<0>(seed, prove_context, proof0);
   if (!DenseVerify<0>(seed, verify_context, proof0)) return false;
@@ -39,7 +39,7 @@ inline bool TestDense(std::string const& working_path) {
   DenseProof proof1;
   DenseProve<1>(seed, prove_context, proof1);
   if (!DenseVerify<1>(seed, verify_context, proof1)) return false;
-  
+
   return true;
 }
 
@@ -50,9 +50,12 @@ inline bool TestSerialize(std::string const& working_path) {
     for (size_t i = 0; i < proof.conv.size(); ++i) {
       std::cout << "proof conv " << i << ": " << YasGetBinLen(proof.conv[i])
                 << "\n";
-      std::cout << "\t input pub:" << YasGetBinLen(proof.conv[i].input_pub) << "\n";
-      std::cout << "\t r1cs pub:" << YasGetBinLen(proof.conv[i].r1cs_pub) << "\n";
-      std::cout << "\t output pub:" << YasGetBinLen(proof.conv[i].output_pub) << "\n";
+      std::cout << "\t input pub:" << YasGetBinLen(proof.conv[i].input_pub)
+                << "\n";
+      std::cout << "\t r1cs pub:" << YasGetBinLen(proof.conv[i].r1cs_pub)
+                << "\n";
+      std::cout << "\t output pub:" << YasGetBinLen(proof.conv[i].output_pub)
+                << "\n";
     }
     std::cout << "\n";
     std::cout << "proof relubn: " << YasGetBinLen(proof.relubn) << "\n";
@@ -61,9 +64,12 @@ inline bool TestSerialize(std::string const& working_path) {
     std::cout << "\n";
 
     std::cout << "proof pooling: " << YasGetBinLen(proof.pooling) << "\n";
-    std::cout << "\t input pub: " << YasGetBinLen(proof.pooling.input_pub) << "\n";
-    std::cout << "\t r1cs pub: " << YasGetBinLen(proof.pooling.r1cs_pub) << "\n";
-    std::cout << "\t output pub: " << YasGetBinLen(proof.pooling.output_pub) << "\n";
+    std::cout << "\t input pub: " << YasGetBinLen(proof.pooling.input_pub)
+              << "\n";
+    std::cout << "\t r1cs pub: " << YasGetBinLen(proof.pooling.r1cs_pub)
+              << "\n";
+    std::cout << "\t output pub: " << YasGetBinLen(proof.pooling.output_pub)
+              << "\n";
     std::cout << "\n";
 
     std::cout << "proof dense0: " << YasGetBinLen(proof.dense0) << "\n";
@@ -81,7 +87,7 @@ inline bool TestSerialize(std::string const& working_path) {
 }
 
 inline bool TestProve(std::string const& test_image_path,
-                    std::string const& working_path) {
+                      std::string const& working_path) {
   Tick tick(__FN__);
   h256_t seed = misc::RandH256();
 
@@ -96,20 +102,21 @@ inline bool TestProve(std::string const& test_image_path,
   YasSaveBin(working_path + "/proof", proof);
   std::cout << Tick::GetIndentString() << "proof size: " << YasGetBinLen(proof)
             << "\n";
-  //if (!TestSerialize(working_path)) return false;
+  // if (!TestSerialize(working_path)) return false;
 
   return Verify(seed, working_path + "/pub", test_image, proof);
 }
 //
 //// "E:/code/crypto/pod_doc/vgg16_2/test_image"
-//inline bool TestProve(std::string const& test_image_path,
+// inline bool TestProve(std::string const& test_image_path,
 //                      std::string const& working_path) {
 //  Tick tick(__FN__);
 //
 //  bool ret = false;
 //
 //  //ret = Publish("E:/code/crypto/pod_doc/vgg16_2/features", working_path);
-//  // ret =TestInfer("E:/code/crypto/pod_doc/vgg16_2/test_image", working_path);
+//  // ret =TestInfer("E:/code/crypto/pod_doc/vgg16_2/test_image",
+//  working_path);
 //  //ret =TestConv(working_path);
 //  // ret= TestReluBn(working_path);
 //  //ret= TestPooling(working_path);
@@ -142,7 +149,7 @@ inline bool Test() {
     Publish(features_path, working_path);
   }
 
-  //TestConv(working_path); // TODO
+  // TestConv(working_path); // TODO
   return TestProve(test_image_path, working_path);
 }
 

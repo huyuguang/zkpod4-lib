@@ -1,10 +1,10 @@
 #pragma once
 
 #include "./para_dbl.h"
+#include "circuit/fixed_point/fixed_point.h"
 #include "ecc/ecc.h"
 #include "misc/misc.h"
 #include "utils/fst.h"
-#include "circuit/fixed_point/fixed_point.h"
 
 namespace clink {
 namespace vgg16 {
@@ -139,14 +139,12 @@ struct Para {
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), 
-                       ("d", dense_layers_));
+    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), ("d", dense_layers_));
   }
 
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), 
-                       ("d", dense_layers_));
+    ar& YAS_OBJECT_NVP("vgg16.para", ("c", conv_layers_), ("d", dense_layers_));
   }
 
   ConvLayer const& conv_layer(size_t order) const {

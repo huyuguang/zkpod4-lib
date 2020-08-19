@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "./adapt.h"
-#include "./r1cs.h"
 #include "./context.h"
 #include "./image_com.h"
 #include "./policy.h"
+#include "./r1cs.h"
 #include "./r1cs_pub.h"
 #include "circuit/vgg16/vgg16.h"
 #include "clink/equal_ip.h"
@@ -101,8 +101,8 @@ struct OneConvProof {
   OneConvOutputPub output_pub;
 
   bool operator==(OneConvProof const& b) const {
-    return input_pub == b.input_pub &&
-           r1cs_pub == b.r1cs_pub && output_pub == b.output_pub;
+    return input_pub == b.input_pub && r1cs_pub == b.r1cs_pub &&
+           output_pub == b.output_pub;
   }
 
   bool operator!=(OneConvProof const& b) const { return !(*this == b); }
@@ -177,6 +177,6 @@ inline std::string ConvR1csTag(size_t layer) {
 inline std::string ConvAdaptTag(bool in, size_t layer) {
   static const std::string in_tag = "conv in ";
   static const std::string out_tag = "conv out ";
-  return (in? in_tag:out_tag)+std::to_string(layer);
+  return (in ? in_tag : out_tag) + std::to_string(layer);
 }
 }  // namespace clink::vgg16

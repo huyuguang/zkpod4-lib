@@ -26,9 +26,14 @@ struct A4 {
   };
 
   struct VerifyInput {
-    VerifyInput(std::string const& tag, CommitmentPub&& com_pub, GetRefG1 const& get_gx,
-                std::vector<std::vector<Fr>>&& a, G1 const& gz)
-        : tag(tag), com_pub(std::move(com_pub)), get_gx(get_gx), a(std::move(a)), gz(gz) {
+    VerifyInput(std::string const& tag, CommitmentPub&& com_pub,
+                GetRefG1 const& get_gx, std::vector<std::vector<Fr>>&& a,
+                G1 const& gz)
+        : tag(tag),
+          com_pub(std::move(com_pub)),
+          get_gx(get_gx),
+          a(std::move(a)),
+          gz(gz) {
       Check();
     }
     std::string tag;
@@ -382,8 +387,8 @@ struct A4 {
     assert(input.a.size() == 1);
 
     A3::CommitmentPub com_pub_a3(com_pub.cx[0], com_pub.cz);
-    A3::VerifyInput verifier_input_a3(input.tag, input.a[0], com_pub_a3, input.get_gx,
-                                      input.gz);
+    A3::VerifyInput verifier_input_a3(input.tag, input.a[0], com_pub_a3,
+                                      input.get_gx, input.gz);
     return A3::Verify(proof.proof_a3, seed, verifier_input_a3);
   }
 
@@ -482,7 +487,8 @@ struct A4 {
     };
 
     auto a_copy = a;
-    ProveInput prove_input("test", std::move(x), std::move(a), z, get_gx, pc::PcU());
+    ProveInput prove_input("test", std::move(x), std::move(a), z, get_gx,
+                           pc::PcU());
     CommitmentPub com_pub;
     CommitmentSec com_sec;
     ComputeCom(prove_input, &com_pub, &com_sec);
@@ -510,8 +516,8 @@ struct A4 {
     }
 #endif
 
-    VerifyInput verify_input("test", std::move(copy_com_pub), get_gx, std::move(a_copy),
-                             pc::PcU());
+    VerifyInput verify_input("test", std::move(copy_com_pub), get_gx,
+                             std::move(a_copy), pc::PcU());
     bool success = Verify(proof, seed, verify_input);
     std::cout << __FILE__ << " " << __FN__ << ": " << success << "\n\n\n\n\n\n";
     return success;

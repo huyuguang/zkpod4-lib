@@ -76,10 +76,10 @@ inline h256_t AdaptItemDigest(std::vector<G1> const& cx,
   return digest;
 }
 
-template<typename Item>
+template <typename Item>
 void AdaptUpdateSeed(h256_t& seed, std::vector<Item> const& items) {
   std::vector<h256_t> digests(items.size());
-  auto parallel_f = [&digests,&items](int64_t i) {
+  auto parallel_f = [&digests, &items](int64_t i) {
     digests[i] = AdaptItemDigest(items[i].cx, items[i].a);
   };
   parallel::For(items.size(), parallel_f);
@@ -115,7 +115,7 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
       CHECK(i.CheckData(), i.order_tag);
     }
   }
-  
+
   for (auto const& i : items) {
     std::cout << Tick::GetIndentString() << i.order_tag << "," << i.a.size()
               << "*" << i.a[0].size() << "\n";
@@ -127,7 +127,7 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
   AdaptComputeFst(seed, e);
   // std::cout << __FN__ << "  " << e[0] << "\n";
 
-  auto pf = [&items,&e](int64_t i) {
+  auto pf = [&items, &e](int64_t i) {
     for (auto& j : items[i].a) {
       j *= e[i];
     }
@@ -156,8 +156,9 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
     }
   }
 
-  hyrax::A4::ProveInput input("adapt", std::move(combined_x), std::move(combined_a),
-                              FrZero(), pc::kGetRefG1, pc::PcU());
+  hyrax::A4::ProveInput input("adapt", std::move(combined_x),
+                              std::move(combined_a), FrZero(), pc::kGetRefG1,
+                              pc::PcU());
   hyrax::A4::CommitmentPub com_pub;
   com_pub.cx = std::move(combined_cx);
   com_pub.cz = G1Zero();
@@ -166,7 +167,7 @@ inline void AdaptProve(h256_t seed, AdaptProveItemMan& item_man,
   com_sec.r = std::move(combined_rx);
   com_sec.t = FrZero();
 
-  hyrax::A4::Prove(proof, seed, std::move(input), std::move(com_pub), 
+  hyrax::A4::Prove(proof, seed, std::move(input), std::move(com_pub),
                    std::move(com_sec));
 }
 
@@ -183,7 +184,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
               return a.order_tag < b.order_tag;
             });
 
-  for (auto const& i : items) {    
+  for (auto const& i : items) {
     CHECK(i.CheckFormat(), i.order_tag);
   }
 
@@ -193,7 +194,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
   AdaptComputeFst(seed, e);
   std::cout << Tick::GetIndentString() << " " << e[0] << "\n";
 
-  auto pf = [&items,&e](int64_t i) {
+  auto pf = [&items, &e](int64_t i) {
     for (auto& j : items[i].a) {
       j *= e[i];
     }
@@ -217,7 +218,7 @@ inline bool AdaptVerify(h256_t seed, AdaptVerifyItemMan& item_man,
       ++cursor;
     }
   }
- 
+
   hyrax::A4::CommitmentPub com_pub;
   com_pub.cx = std::move(combined_cx);
   com_pub.cz = G1Zero();

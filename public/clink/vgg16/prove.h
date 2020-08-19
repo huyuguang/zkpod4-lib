@@ -1,10 +1,10 @@
 #pragma once
 
 #include "./adapt.h"
-#include "./image_com.h"
-#include "./infer.h"
 #include "./conv_prove.h"
 #include "./dense_prove.h"
+#include "./image_com.h"
+#include "./infer.h"
 #include "./pooling_prove.h"
 #include "./relu_prove.h"
 
@@ -15,7 +15,7 @@ inline bool InferAndCommit(dbl::Image const& test_image,
   Tick tick(__FN__);
 
   if (fs::is_regular_file(working_path + "/sec/image_com_sec")) {
-    std::cout << Tick::GetIndentString()<<"skip infer, use last images\n";
+    std::cout << Tick::GetIndentString() << "skip infer, use last images\n";
     return true;
   }
 
@@ -56,7 +56,8 @@ struct Proof {
   clink::ParallelR1cs<R1cs>::Proof r1cs_proof;
 
   hyrax::A4::Proof conv_adapt_proof[kConvCount];
-  clink::ParallelR1cs<R1cs>::Proof conv_r1cs_proof[kConvCount];// TODO: serialize
+  clink::ParallelR1cs<R1cs>::Proof
+      conv_r1cs_proof[kConvCount];  // TODO: serialize
 
   Proof(std::string const& file) {
     Tick tick(__FN__);
@@ -99,7 +100,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
   std::unique_ptr<R1csProveItemMan> pr1cs_man(new R1csProveItemMan);
   auto& r1cs_man = *pr1cs_man;
 
-  //ParallelVoidTaskMan task_man;
+  // ParallelVoidTaskMan task_man;
 
   std::vector<parallel::VoidTask> tasks;
 
@@ -161,7 +162,7 @@ inline bool Prove(h256_t seed, dbl::Image const& test_image,
     Tick subtick("preprocess");
     auto f1 = [&tasks](int64_t i) { tasks[i](); };
     parallel::For(tasks.size(), f1);
-  }  
+  }
 
   std::vector<parallel::VoidTask> void_tasks;
   void_tasks.emplace_back([&seed, &padapt_man, &proof]() {

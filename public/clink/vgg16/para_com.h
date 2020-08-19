@@ -140,13 +140,11 @@ struct ParaCommitmentPub {
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv),
-                       ("d", dense));
+    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv), ("d", dense));
   }
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv),
-                       ("d", dense));
+    ar& YAS_OBJECT_NVP("vgg16.para.compub", ("c", conv), ("d", dense));
   }
 };
 
@@ -168,19 +166,17 @@ struct ParaCommitmentSec {
 
   template <typename Ar>
   void serialize(Ar& ar) const {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv),
-                       ("d", dense));
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv), ("d", dense));
   }
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv),
-                       ("d", dense));
+    ar& YAS_OBJECT_NVP("vgg16.para.comsec", ("c", conv), ("d", dense));
   }
 };
 
-inline void ComputeConvCommitment(std::array<Para::ConvLayer, kConvCount> const& para,
-                                  AuxiPub const& auxi, ConvCommitmentPub& pub,
-                                  ConvCommitmentSec& sec) {
+inline void ComputeConvCommitment(
+    std::array<Para::ConvLayer, kConvCount> const& para, AuxiPub const& auxi,
+    ConvCommitmentPub& pub, ConvCommitmentSec& sec) {
   Tick tick(__FN__);
   auto parallel_f = [&para, &auxi, &pub, &sec](int64_t o) {
     auto C = kConvLayerInfos[o].C;
@@ -262,7 +258,7 @@ inline void ComputeParaCommitment(Para const& para, AuxiPub const& auxi,
                                   ParaCommitmentSec& sec) {
   Tick tick(__FN__);
   std::array<parallel::VoidTask, 2> tasks;
-  tasks[0] = [&para,&auxi,&pub,&sec]() {
+  tasks[0] = [&para, &auxi, &pub, &sec]() {
     ComputeConvCommitment(para.conv_layers(), auxi, pub.conv, sec.conv);
   };
   tasks[1] = [&para, &auxi, &pub, &sec]() {

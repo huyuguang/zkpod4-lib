@@ -54,7 +54,7 @@ inline bool TestAbs() {
   gadget.generate_r1cs_constraints();
   pb.val(pb_a) = a;
   gadget.generate_r1cs_witness();
-  CHECK(pb.is_satisfied(),"");
+  CHECK(pb.is_satisfied(), "");
 
   std::cout << Tick::GetIndentString() << pb.val(gadget.ret()) << "\n";
   std::cout << Tick::GetIndentString()

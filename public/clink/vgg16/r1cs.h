@@ -36,7 +36,7 @@ inline void R1csProve(h256_t seed, R1csProveItemMan& item_man,
   for (auto const& i : items) {
     std::cout << Tick::GetIndentString() << i.r1cs_input->unique_tag << ","
               << i.r1cs_input->m << "*" << i.r1cs_input->n << "\n";
-  }  
+  }
 
   std::vector<BatchR1cs<Policy>::ProveInput*> inputs(items.size());
   for (size_t i = 0; i < inputs.size(); ++i) {
@@ -55,7 +55,7 @@ inline bool R1csVerify(h256_t seed, R1csVerifyItemMan& item_man,
   std::vector<BatchR1cs<Policy>::VerifyInput*> inputs(items.size());
   for (size_t i = 0; i < inputs.size(); ++i) {
     inputs[i] = items[i].r1cs_input.get();
-    //std::cout << Tick::GetIndentString() << inputs[i]->unique_tag
+    // std::cout << Tick::GetIndentString() << inputs[i]->unique_tag
     //          << ", public_w.size(): " << inputs[i]->public_w.size() << "\n";
   }
 

@@ -11,10 +11,12 @@ extern bool BIG_MODE;
 namespace pc {
 
 // pedersen commitment base H&G
-class Base : boost::noncopyable { 
+class Base : boost::noncopyable {
  public:
   static int64_t GSize() {
-    return BIG_MODE ? (4096 * 1024 * 50) : (16384 * 1024 + 100);
+    constexpr int64_t kBig = 4096 * 1024 * 50;
+    constexpr int64_t kNor = 16 * 1024 + 100;  // 16384 * 1024 + 100;
+    return BIG_MODE ? kBig : kNor;
   }
 
   Base(std::string const& file) {
@@ -26,7 +28,7 @@ class Base : boost::noncopyable {
     g_ = new G1[GSize()];
     Create();
   }
-  
+
   ~Base() { delete[] g_; }
 
   G1 const& u() const& { return u_; }
@@ -164,8 +166,11 @@ inline Base& GetPcBase(std::string const& file = "") {
 }
 
 inline bool operator==(Base const& a, Base const& b) {
+  if (a.u() != b.u()) return false;
   if (a.h() != b.h()) return false;
-  if (a.g() != b.g()) return false;
+  for (int64_t i = 0; i < Base::GSize(); ++i) {
+    if (a.g()[i] != b.g()[i]) return false;
+  }
   return true;
 }
 
@@ -195,7 +200,7 @@ inline bool OpenOrCreatePdsPub(std::string const& file) {
 
     std::cout << "Create pc base file success.\n";
     if (!Load(file)) return false;
-    assert(*base == GetPcBase());
+    DCHECK(*base == GetPcBase(), "");
     return true;
   } catch (std::exception& e) {
     std::cerr << "Create pc base file exception: " << e.what() << "\n";

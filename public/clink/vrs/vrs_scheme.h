@@ -116,7 +116,7 @@ struct VrsPoseidonScheme {
 #else
   static const int64_t kMaxUnitPerZkp = 1024 * 16;
 #endif
-  //static_assert(kMaxUnitPerZkp <= pc::Base::GSize() / 3,
+  // static_assert(kMaxUnitPerZkp <= pc::Base::GSize() / 3,
   //              "kMaxUnitPerZkp too large");
 
   static std::string const& type() {

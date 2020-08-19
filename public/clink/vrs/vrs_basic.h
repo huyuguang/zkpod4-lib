@@ -198,7 +198,8 @@ struct VrsBasic {
     R1cs::Prove(proof.r1cs_proof, seed, std::move(r1cs_input));
 
     // proof vw = inner_product(v, w)
-    typename HyraxA::ProveInput ip_input("vrs", v, w, vw, pc::kGetRefG1, input.gvw);
+    typename HyraxA::ProveInput ip_input("vrs", v, w, vw, pc::kGetRefG1,
+                                         input.gvw);
     typename HyraxA::CommitmentPub ip_com_pub;
     typename HyraxA::CommitmentSec ip_com_sec;
     ip_com_sec.r_xi = input.var_coms_r.back();

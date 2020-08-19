@@ -53,7 +53,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   // relubn
   tasks.emplace_back([&context, &seed, &proof, &adapt_man, &r1cs_man]() {
     return ReluVerifyPreprocess(seed, context, proof.relubn, adapt_man,
-                                  r1cs_man);
+                                r1cs_man);
   });
 
   // pooling
@@ -81,7 +81,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
   bool all_success = false;
   auto f1 = [&tasks](int64_t i) { return tasks[i](); };
   parallel::For(&all_success, tasks.size(), f1);
-  CHECK(all_success,"verify failed");
+  CHECK(all_success, "verify failed");
 
   std::vector<parallel::BoolTask> bool_tasks;
   bool_tasks.emplace_back([&seed, &adapt_man, &proof]() {
@@ -96,7 +96,7 @@ inline bool Verify(h256_t seed, std::string const& pub_path,
 
   parallel::For(&all_success, bool_tasks.size(), f2);
 
-  CHECK(all_success,"verify failed");
+  CHECK(all_success, "verify failed");
 
   return all_success;
 }

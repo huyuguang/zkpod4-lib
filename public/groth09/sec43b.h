@@ -94,7 +94,7 @@ struct Sec43b {
    private:
     void Check() {
       CHECK(!x.empty(), "");
-      CHECK(x.size() == y.size() && x.size() == z.size(),"");
+      CHECK(x.size() == y.size() && x.size() == z.size(), "");
       for (auto i = 0LL; i < m(); ++i) {
         CHECK(x[i].size() == y[i].size() && x[i].size() == z[i].size(), "");
         n_ = std::max(n_, x[i].size());
@@ -155,11 +155,11 @@ struct Sec43b {
 
   static void Prove(Proof& proof, h256_t seed, ProveInput&& input,
                     CommitmentPub const& com_pub,
-                    CommitmentSec const& com_sec) {    
+                    CommitmentSec const& com_sec) {
     Tick tick(__FN__, input.to_string());
 
     auto m = input.m();
-    auto n = input.n();    
+    auto n = input.n();
 
     UpdateSeed(seed, com_pub, m, n);
     std::vector<Fr> k(m);
@@ -206,7 +206,7 @@ struct Sec43b {
         };
         parallel::For(m, pf);
         z = std::accumulate(ip.begin(), ip.end(), FrZero());
-        //for (int64_t i = 0; i < m; ++i) {
+        // for (int64_t i = 0; i < m; ++i) {
         //  input_yt[i] = HadamardProduct(input_y[i], t);
         //  z += InnerProduct(input_x[i], input_yt[i]);
         //}
@@ -265,8 +265,8 @@ struct Sec43b {
       };
       parallel::For(n, parallel_f, n < 16 * 1024);
 
-      parahy.input_hy.reset(new typename HyraxA::ProveInput("43b",
-          zk, t, input_53_z, input.get_gz, SelectSec53Gz()));
+      parahy.input_hy.reset(new typename HyraxA::ProveInput(
+          "43b", zk, t, input_53_z, input.get_gz, SelectSec53Gz()));
       auto& input_hy = *parahy.input_hy;
       (void)input_hy;
 
@@ -307,8 +307,7 @@ struct Sec43b {
           com_pub(com_pub),
           get_gx(get_gx),
           get_gy(get_gy),
-          get_gz(get_gz) {
-    }
+          get_gz(get_gz) {}
     std::vector<size_t> const& mn;
     CommitmentPub const& com_pub;
     GetRefG1 const& get_gx;
@@ -356,7 +355,7 @@ struct Sec43b {
     tasks[1] = [&ret_a2, &com_pub, &proof, &t, &k, &seed, &input]() {
       typename HyraxA::CommitmentPub com_pub_hy(MultiExpBdlo12(com_pub.c, k),
                                                 proof.c);
-      typename HyraxA::VerifyInput input_hy("43b",t, com_pub_hy, input.get_gz,
+      typename HyraxA::VerifyInput input_hy("43b", t, com_pub_hy, input.get_gz,
                                             SelectSec53Gz());
       ret_a2 = HyraxA::Verify(proof.proof_a, seed, input_hy);
       assert(ret_a2);
@@ -442,7 +441,8 @@ bool Sec43b<Sec53, HyraxA>::Test(int64_t m, int64_t n) {
   yas::mem_ostream os;
   yas::binary_oarchive<yas::mem_ostream, YasBinF()> oa(os);
   oa.serialize(proof);
-  std::cout << Tick::GetIndentString() << "proof size: " << os.get_shared_buffer().size << "\n";
+  std::cout << Tick::GetIndentString()
+            << "proof size: " << os.get_shared_buffer().size << "\n";
   // serialize from buffer
   yas::mem_istream is(os.get_intrusive_buffer());
   yas::binary_iarchive<yas::mem_istream, YasBinF()> ia(is);

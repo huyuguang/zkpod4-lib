@@ -232,7 +232,8 @@ bool SubstrQuery<Policy>::Test(int64_t n, int64_t s, std::string const& key,
     return false;
   }
   if (s >= pc::Base::GSize() / 2) {
-    std::cout << "invalid parameter: s must < " << pc::Base::GSize() / 2 << "\n";
+    std::cout << "invalid parameter: s must < " << pc::Base::GSize() / 2
+              << "\n";
     return false;
   }
 

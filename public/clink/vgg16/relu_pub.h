@@ -129,7 +129,7 @@ inline void ReluBnBuildChallenge(h256_t const& seed,
 // even: in
 // odd: out
 inline void ReluBuildImages(ProveContext const& context,
-                              std::vector<ReluBnImage>& images) {
+                            std::vector<ReluBnImage>& images) {
   Tick tick(__FN__);
   auto const& const_images = context.const_images();
   auto const& com_images = context.image_com_pub().c;
@@ -167,13 +167,11 @@ inline void ReluBuildImages(ProveContext const& context,
 
   std::array<parallel::VoidTask, 2> tasks;
   tasks[0] = [&combined_in]() {
-    combined_in.com_x =
-        pc::ComputeCom(combined_in.x, combined_in.com_x_r);
+    combined_in.com_x = pc::ComputeCom(combined_in.x, combined_in.com_x_r);
   };
 
   tasks[1] = [&combined_out]() {
-    combined_out.com_x =
-        pc::ComputeCom(combined_out.x, combined_out.com_x_r);
+    combined_out.com_x = pc::ComputeCom(combined_out.x, combined_out.com_x_r);
   };
 
   parallel::Invoke(tasks);
