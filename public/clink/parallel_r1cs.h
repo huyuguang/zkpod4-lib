@@ -48,7 +48,6 @@ struct ParallelR1cs {
           m(r1cs_info.num_constraints),
           s(r1cs_info.num_variables),
           n((int64_t)w[0].size()) {
-
       CHECK((int64_t)w.size() == s, "");
       CHECK((int64_t)com_w.size() == s, "");
       CHECK((int64_t)com_w_r.size() == s, "");
@@ -423,8 +422,9 @@ struct ParallelR1cs {
       Prove(proof, seed, std::move(prove_input));
     }
 
-  std::cout << Tick::GetIndentString()
-              << "proof size: " << YasGetBinLen(proof) << "\n";
+    std::cout << Tick::GetIndentString()
+              << "proof size(without commitment): " << YasGetBinLen(proof)
+              << "\n";
 
     std::vector<std::vector<Fr>> public_w;
     VerifyInput verify_input(n, r1cs_info, "test", com_w, public_w,

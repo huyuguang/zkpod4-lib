@@ -33,22 +33,32 @@ struct Tick {
     }
   }
 
-  static int UpdateIndent(int inc) {
-    static thread_local int indent = 0;
-    indent += inc;
-    assert(indent >= 0);
-    return indent;
-  }
+  static int UpdateIndent(int v) { return IndentInner(v, false); }
+
+  static int SetIndent(int v) { return IndentInner(v, true); }
+
+  static int GetIndent() { return IndentInner(0, false); }
 
   static std::string GetIndentString(int indent) {
     return std::string(2 * indent, ' ');
   }
 
   static std::string GetIndentString() {
-    return std::string(2 * UpdateIndent(0), ' ');
+    return GetIndentString(GetIndent());
   }
 
  private:
+  static int IndentInner(int value, bool set) {
+    static thread_local int indent = 0;
+    if (set) {
+      indent = value;
+    } else {
+      indent += value;
+    }
+    assert(indent >= 0);
+    return indent;
+  }
+
   void Uniform() {
 #ifdef __GNUC__
     auto pos = desc_.find_first_of('(');

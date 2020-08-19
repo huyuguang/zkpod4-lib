@@ -95,7 +95,9 @@ void For(T count, F& f, bool direct = false) {
     return;
   }
 
-  auto f2 = [&f](const tbb::blocked_range<T>& range) {
+  auto indent = Tick::GetIndent();
+  auto f2 = [&f, indent](const tbb::blocked_range<T>& range) {
+    Tick::SetIndent(indent + 1);
     for (T i = range.begin(); i != range.end(); ++i) {
       f(i);
     }
@@ -107,43 +109,49 @@ template <typename TaskContainer>
 void Invoke(TaskContainer& tasks, bool direct = false) {
   if (tasks.empty()) return;
 
-  if (tasks.size() == 1) return tasks[0]();
+  if (tasks.size() == 1) {
+    tasks[0]();
+    return;
+  }
 
 #ifdef DISABLE_TBB_RECURSION
   AutoInThread auto_in_thread;
   if (!auto_in_thread.flag) direct = true;
 #endif
 
-  if (direct) {
-    for (auto& task : tasks) {
-      task();
-    }
-    return;
-  }
+  //if (direct) {
+  //  for (auto& task : tasks) {
+  //    task();
+  //  }
+  //  return;
+  //}
 
-  if (tasks.size() == 2) {
-    tbb::parallel_invoke(tasks[0], tasks[1]);
-  } else if (tasks.size() == 3) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2]);
-  } else if (tasks.size() == 4) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3]);
-  } else if (tasks.size() == 5) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4]);
-  } else if (tasks.size() == 6) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
-                         tasks[5]);
-  } else if (tasks.size() == 7) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
-                         tasks[5], tasks[6]);
-  } else if (tasks.size() == 8) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
-                         tasks[5], tasks[6], tasks[7]);
-  } else if (tasks.size() == 9) {
-    tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
-                         tasks[5], tasks[6], tasks[7], tasks[8]);
-  } else {
-    CHECK(false, "");    
-  }
+  auto f = [&tasks](int64_t i) { tasks[i](); };
+  For(tasks.size(), f, direct);
+
+  //if (tasks.size() == 2) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1]);
+  //} else if (tasks.size() == 3) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2]);
+  //} else if (tasks.size() == 4) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3]);
+  //} else if (tasks.size() == 5) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4]);
+  //} else if (tasks.size() == 6) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
+  //                       tasks[5]);
+  //} else if (tasks.size() == 7) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
+  //                       tasks[5], tasks[6]);
+  //} else if (tasks.size() == 8) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
+  //                       tasks[5], tasks[6], tasks[7]);
+  //} else if (tasks.size() == 9) {
+  //  tbb::parallel_invoke(tasks[0], tasks[1], tasks[2], tasks[3], tasks[4],
+  //                       tasks[5], tasks[6], tasks[7], tasks[8]);
+  //} else {
+  //  CHECK(false, "");    
+  //}
 }
 
 template <class InputIt, class T>
