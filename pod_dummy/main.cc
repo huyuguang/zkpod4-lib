@@ -241,7 +241,7 @@ int main(int argc, char** argv) {
                                          po::value<Param2Str>(&vgg16_prove),
                                          "test_image_path working_path")(
         "vgg16_test", "")("debug_check", "")(
-          "big_mode", "");
+          "big_mode", "")("disable_tbb", "");
 
     boost::program_options::variables_map vmap;
 
