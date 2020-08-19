@@ -19,6 +19,7 @@
 
 bool DEBUG_CHECK = false;
 bool BIG_MODE = false;
+bool DISABLE_TBB = false;
 
 bool InitAll(std::string const& data_dir) {
   InitEcc();
@@ -185,7 +186,7 @@ int main(int argc, char** argv) {
   Param2Str vgg16_dbl_infer;
   Param2Str vgg16_prove;
   bool vgg16_test = false;
-
+  
   try {
     po::options_description options("command line options");
     options.add_options()("help,h", "Use -h or --help to list all arguments")(
@@ -334,6 +335,10 @@ int main(int argc, char** argv) {
 
     if (vmap.count("big_mode")) {
       BIG_MODE = true;
+    }
+
+    if (vmap.count("disable_tbb")) {
+      DISABLE_TBB = true;
     }
   } catch (std::exception& e) {
     std::cout << "Unknown parameters.\n"
