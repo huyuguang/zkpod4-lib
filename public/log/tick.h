@@ -29,7 +29,7 @@ struct Tick {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t);
     DecIndent();
     std::cout << GetIndentString(GetIndent());
-    if (s.count() < 10) {
+    if (s.count() < 100) {
       std::cout << "<== " << desc_ << " tick: " << ms.count() << " ms\n";
     } else {
       std::cout << "<== " << desc_ << " tick: " << s.count() << " seconds\n";

@@ -276,9 +276,20 @@ inline bool TestMultiexp(int64_t n) {
   FrRand(f);
   std::vector<G1> g(n);
   G1Rand(g);
+  auto start = std::chrono::steady_clock::now();
   for (size_t i = 0; i < 10; ++i) {
     Tick tick(__FN__, std::to_string(i));
     MultiExpBdlo12<G1>(g, f);
+  }
+  auto end = std::chrono::steady_clock::now();
+  auto t = end - start;
+  auto s = std::chrono::duration_cast<std::chrono::seconds>(t);
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t);
+  std::cout << Tick::GetIndentString();
+  if (s.count() < 100) {
+    std::cout << "average: " << ms.count() << " ms\n";
+  } else {
+    std::cout << "average: " << s.count() << " seconds\n";
   }
   return true;
 }
