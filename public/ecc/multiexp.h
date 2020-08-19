@@ -282,7 +282,7 @@ inline bool TestMultiexp(int64_t n) {
     MultiExpBdlo12<G1>(g, f);
   }
   auto end = std::chrono::steady_clock::now();
-  auto t = end - start;
+  auto t = (end - start)/10;
   auto s = std::chrono::duration_cast<std::chrono::seconds>(t);
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t);
   std::cout << Tick::GetIndentString();
